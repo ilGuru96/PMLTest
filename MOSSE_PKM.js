@@ -154,3 +154,7 @@ const SKILL_DB = {
     3: [ { nome:"Carineria", pwr:90 }, { nome:"Vapore Incantato", pwr:90 }, { nome:"Forza Lunare", pwr:95 }, { nome:"Nebbioscoppio", pwr:100 }, { nome:"Tempesta Zefirea", pwr:100 }, { nome:"Turboincanto", pwr:100 }, { nome:"Sbrilluccibufera", pwr:120 }, ]
   },
 };
+// EXPORT CORRETTI
+window.SKILL_DB = SKILL_DB;
+window.MOSSE_DB = SKILL_DB;
+window.PokeMisteryRL_SKILL_DB = SKILL_DB;
