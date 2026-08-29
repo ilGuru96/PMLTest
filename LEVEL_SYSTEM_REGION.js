@@ -2,6 +2,9 @@
  * SOURCE: current Point 0
  * Depends on: getStatsFromBST / getStage helpers already provided by Core.
  */
+const PokeMisteryRL = {};
+
+window.PokeMisteryRL = PokeMisteryRL;
 
 const PokeMisteryRL_LevelSystem = (() => {
 
@@ -258,4 +261,6 @@ function rebuildBaseStats(pokemon) {
     };
 })();
 
-window.PokeMisteryRL_LevelSystem = PokeMisteryRL_LevelSystem;
+// #region 06 - LEVEL SYSTEM - AUTONOMO - FINAL
+
+// #endregion
