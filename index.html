@@ -1,107 +1,670 @@
-<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PokeMisteryRL</title>
+<!doctype html>
+<html lang="it">
+
+<head>
+
+  <meta charset="utf-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  >
+
+  <title>PokeMisteryRL</title>
+
+</head>
 
 
-</head><body><main id="gameBox">
-<section id="menu"><h1>⚡ PokeMisteryRL</h1><p class="subtitle">ROGUELIKE ADVENTURE</p><button id="startButton" type="button">🎲 RUN CASUALE</button><div id="boot">Caricamento sistema...</div></section>
-<section id="game" class="hidden"><div id="eventLog"></div><div class="map-wrap"><svg id="mapSvg" aria-hidden="true"></svg><div id="map" aria-label="Mappa della run"></div></div><div id="bottomContainer"></div><div><div id="runLogHeader" onclick="toggleRunLog()">LOG RUN ▼</div><div id="runLogContent"></div></div></section>
-<div id="modal" class="hidden"><div id="modalContent"></div></div>
-<section id="pokePreview" class="hidden" aria-hidden="true">
+<body>
 
-  <div class="pp-box">
+<main id="gameBox">
 
-    <div class="pp-top">
 
-      <div class="pp-sprite-wrap">
-        <img
-          id="ppSprite"
-          src=""
-          alt="Pokémon"
-        >
-      </div>
+  <!-- =========================================================
+       MENU PRINCIPALE
+       ========================================================= -->
 
-      <div class="pp-info">
+  <section id="menu">
 
-        <h3 id="ppName">-</h3>
+    <h1>
+      ⚡ PokeMisteryRL
+    </h1>
 
-        <span id="ppLevel" class="pp-lv">
-          LV 1
-        </span>
+    <p class="subtitle">
+      ROGUELIKE ADVENTURE
+    </p>
 
-        <div id="ppTypes" class="pp-types"></div>
+    <button
+      id="startButton"
+      type="button"
+    >
+      🎲 RUN CASUALE
+    </button>
 
-        <div class="pp-hp">
-          <div id="ppHpFill" class="pp-fill"></div>
-        </div>
+    <div id="boot">
+      Caricamento sistema...
+    </div>
 
-        <small id="ppHpText">
-          0/0
-        </small>
+  </section>
 
-      </div>
 
-      <button
-        type="button"
-        class="pp-close"
-        onclick="closeTeamPreview()"
-        aria-label="Chiudi"
+  <!-- =========================================================
+       GAME
+       ========================================================= -->
+
+  <section
+    id="game"
+    class="hidden"
+  >
+
+    <div id="eventLog"></div>
+
+
+    <!-- MAPPA -->
+
+    <div class="map-wrap">
+
+      <svg
+        id="mapSvg"
+        aria-hidden="true"
+      ></svg>
+
+      <div
+        id="map"
+        aria-label="Mappa della run"
+      ></div>
+
+    </div>
+
+
+    <!-- BOTTOM / HUD -->
+
+    <div id="bottomContainer"></div>
+
+
+    <!-- LOG -->
+
+    <div>
+
+      <div
+        id="runLogHeader"
+        onclick="toggleRunLog()"
       >
-        ✕
-      </button>
+        LOG RUN ▼
+      </div>
+
+      <div id="runLogContent"></div>
 
     </div>
 
-    <div class="pp-stats">
+  </section>
 
-      <div>
-        ATK
-        <b id="ppk">0</b>
-      </div>
 
-      <div>
-        DEF
-        <b id="ppDef">0</b>
-      </div>
+  <!-- =========================================================
+       MODAL
+       ========================================================= -->
 
-      <div>
-        SPD
-        <b id="ppSpd">0</b>
-      </div>
+  <div
+    id="modal"
+    class="hidden"
+  >
 
-    </div>
-
-    <div class="pp-custom">
-
-      <h4>Info Box</h4>
-
-      <div id="ppCustomContent"></div>
-
-    </div>
+    <div id="modalContent"></div>
 
   </div>
 
-</section>
-</main><div id="fatal" style="display:none;position:fixed;left:10px;right:10px;bottom:10px;z-index:9999;max-width:900px;margin:auto;padding:12px;background:#240d12;border:1px solid #a54b57;border-radius:8px;color:#ffdfe3;white-space:pre-wrap;font:12px monospace"></div>
-<script src="./DB_PKM.js"></script><script>if(typeof PKM_ALL!=="undefined")window.PKM_ALL=PKM_ALL;</script>
-<script src="./MOSSE_PKM.js"></script><script src="./CORE_1_BASE.js"></script>
-<script src="./LEVEL_SYSTEM_REGION.js"></script><script src="./SKILL_SYSTEM_REGION.js"></script><script src="./DB_ITEMS.js"></script>
-<script src="./CORE_2_GAMEPLAY.js"></script><script src="./RECRUIT_SYSTEM_REGION.js"></script>
+
+  <!-- =========================================================
+       POKÉMON PREVIEW
+       ========================================================= -->
+
+  <section
+    id="pokePreview"
+    class="hidden"
+    aria-hidden="true"
+  >
+
+    <div class="pp-box">
+
+
+      <!-- HEADER -->
+
+      <div class="pp-top">
+
+
+        <div class="pp-sprite-wrap">
+
+          <img
+            id="ppSprite"
+            src=""
+            alt="Pokémon"
+          >
+
+        </div>
+
+
+        <div class="pp-info">
+
+          <h3 id="ppName">
+            -
+          </h3>
+
+
+          <span
+            id="ppLevel"
+            class="pp-lv"
+          >
+            LV 1
+          </span>
+
+
+          <div
+            id="ppTypes"
+            class="pp-types"
+          ></div>
+
+
+          <div class="pp-hp">
+
+            <div
+              id="ppHpFill"
+              class="pp-fill"
+            ></div>
+
+          </div>
+
+
+          <small id="ppHpText">
+            0/0
+          </small>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="pp-close"
+          onclick="closeTeamPreview()"
+          aria-label="Chiudi"
+        >
+          ✕
+        </button>
+
+      </div>
+
+
+      <!-- STATISTICHE -->
+
+      <div class="pp-stats">
+
+
+        <div>
+
+          ATK
+
+          <b id="ppk">
+            0
+          </b>
+
+        </div>
+
+
+        <div>
+
+          DEF
+
+          <b id="ppDef">
+            0
+          </b>
+
+        </div>
+
+
+        <div>
+
+          SPD
+
+          <b id="ppSpd">
+            0
+          </b>
+
+        </div>
+
+
+      </div>
+
+
+      <!-- INFO BOX -->
+
+      <div class="pp-custom">
+
+        <h4>
+          Info Box
+        </h4>
+
+        <div id="ppCustomContent"></div>
+
+      </div>
+
+
+    </div>
+
+  </section>
+
+
+</main>
+
+
+<!-- =========================================================
+     FATAL ERROR
+     ========================================================= -->
+
+<div
+  id="fatal"
+  style="
+    display:none;
+    position:fixed;
+    left:10px;
+    right:10px;
+    bottom:10px;
+    z-index:9999;
+    max-width:900px;
+    margin:auto;
+    padding:12px;
+    background:#240d12;
+    border:1px solid #a54b57;
+    border-radius:8px;
+    color:#ffdfe3;
+    white-space:pre-wrap;
+    font:12px monospace;
+  "
+></div>
+
+
+<!-- =========================================================
+     DATABASE POKÉMON
+     ========================================================= -->
+
+<script src="./DB_PKM.js"></script>
+
+
 <script>
-(function(){
-const fatal=document.getElementById("fatal"),boot=document.getElementById("boot"),button=document.getElementById("startButton");
-function err(x){fatal.style.display="block";fatal.textContent=x;console.error(x)}
-window.addEventListener("error",e=>err("ERRORE JAVASCRIPT\n\n"+(e.error?.stack||e.message||String(e.error||e))));
-window.addEventListener("unhandledrejection",e=>err("PROMISE REJECTION\n\n"+(e.reason?.stack||e.reason||String(e.reason))));
-button.addEventListener("click",function(){
- if(typeof window.start!=="function"){err("window.start non è disponibile.\n\nIl CORE attuale non espone ancora una funzione start().");return}
- try{window.start()}catch(e){err("ERRORE DURANTE LA RUN\n\n"+(e?.stack||e))}
-});
-console.table({PKM_ALL:!!window.PKM_ALL,MOSSE:typeof SKILL_DB,CORE_1:!!window.PokeMisteryRL_CoreBridge?.part1Ready,LEVEL:typeof window.PokeMisteryRL_LevelSystem,SKILL:typeof window.PokeMisteryRL_SkillSystem,ITEMS:!!window.PokeMisteryRL_Items,CORE_2:!!window.PokeMisteryRL_CoreBridge?.part2Ready,START:typeof window.start});
-boot.textContent=typeof window.start==="function"?"✅ Sistema pronto":"⚠️ CORE caricato — start() non esposto";
-})();
+
+if (
+  typeof PKM_ALL !== "undefined"
+) {
+
+  window.PKM_ALL = PKM_ALL;
+
+}
+
 </script>
 
 
+<!-- =========================================================
+     DATABASE MOSSE
+     ========================================================= -->
 
+<script src="./MOSSE_PKM.js"></script>
+
+
+<!-- =========================================================
+     CORE 1
+     ========================================================= -->
+
+<script src="./CORE_1_BASE.js"></script>
+
+
+<!-- =========================================================
+     LEVEL SYSTEM
+     ========================================================= -->
+
+<script src="./LEVEL_SYSTEM_REGION.js"></script>
+
+
+<!-- =========================================================
+     SKILL SYSTEM
+     ========================================================= -->
+
+<script src="./SKILL_SYSTEM_REGION.js"></script>
+
+
+<!-- =========================================================
+     DATABASE ITEMS
+     ========================================================= -->
+
+<script src="./DB_ITEMS.js"></script>
+
+
+<!-- =========================================================
+     CORE 2
+     ========================================================= -->
+
+<script src="./CORE_2_GAMEPLAY.js"></script>
+
+
+<!-- =========================================================
+     RECRUITMENT SYSTEM
+     ========================================================= -->
+
+<script src="./RECRUIT_SYSTEM_REGION.js"></script>
+
+
+<!-- =========================================================
+     S2 DIRECT CLICK BRIDGE
+     
+     NON modifica il layout.
+     Collega solamente le card S2 alla funzione
+     equipAsSecond() già presente nel CORE.
+     ========================================================= -->
+
+<script>
+
+(function () {
+
+  if (
+    window.__s2DirectSwapCapture
+  ) {
+
+    return;
+
+  }
+
+
+  window.__s2DirectSwapCapture = true;
+
+
+  document.addEventListener(
+    "click",
+    function (event) {
+
+      const card =
+        event.target?.closest?.(
+          ".s2-choice-card"
+        );
+
+
+      if (!card) {
+
+        return;
+
+      }
+
+
+      const index =
+        card.getAttribute(
+          "data-s2-index"
+        );
+
+
+      if (index === null) {
+
+        return;
+
+      }
+
+
+      event.preventDefault();
+
+      event.stopImmediatePropagation();
+
+
+      if (
+        typeof window.equipAsSecond ===
+        "function"
+      ) {
+
+        window.equipAsSecond(
+          Number(index)
+        );
+
+      } else {
+
+        console.error(
+          "equipAsSecond() non disponibile"
+        );
+
+      }
+
+    },
+    true
+  );
+
+})();
+
+</script>
+
+
+<!-- =========================================================
+     HOME / START
+     ========================================================= -->
+
+<script>
+
+(function () {
+
+
+  const fatal =
+    document.getElementById(
+      "fatal"
+    );
+
+
+  const boot =
+    document.getElementById(
+      "boot"
+    );
+
+
+  const button =
+    document.getElementById(
+      "startButton"
+    );
+
+
+  function showError(
+    message
+  ) {
+
+    fatal.style.display =
+      "block";
+
+
+    fatal.textContent =
+      message;
+
+
+    console.error(
+      message
+    );
+
+  }
+
+
+  <!-- =======================================================
+       ERROR HANDLER
+       ======================================================= -->
+
+
+  window.addEventListener(
+    "error",
+    function (event) {
+
+      showError(
+        "ERRORE JAVASCRIPT\n\n" +
+
+        (
+          event.error?.stack ||
+
+          event.message ||
+
+          String(
+            event.error ||
+            event
+          )
+        )
+      );
+
+    }
+  );
+
+
+  window.addEventListener(
+    "unhandledrejection",
+    function (event) {
+
+      showError(
+        "PROMISE REJECTION\n\n" +
+
+        (
+          event.reason?.stack ||
+
+          event.reason ||
+
+          String(
+            event.reason
+          )
+        )
+      );
+
+    }
+  );
+
+
+  <!-- =======================================================
+       START BUTTON
+       ======================================================= -->
+
+
+  button.addEventListener(
+    "click",
+    function () {
+
+
+      if (
+        typeof window.start !==
+        "function"
+      ) {
+
+        showError(
+          "window.start non è disponibile.\n\n" +
+          "Il CORE non espone ancora " +
+          "la funzione di avvio della run."
+        );
+
+        return;
+
+      }
+
+
+      try {
+
+        window.start();
+
+      } catch (error) {
+
+        showError(
+          "ERRORE DURANTE LA RUN\n\n" +
+
+          (
+            error?.stack ||
+            error
+          )
+        );
+
+      }
+
+    }
+  );
+
+
+  <!-- =======================================================
+       DIAGNOSTICA
+       ======================================================= -->
+
+
+  console.table({
+
+    PKM_ALL:
+      !!window.PKM_ALL,
+
+
+    MOSSE:
+      typeof SKILL_DB,
+
+
+    CORE_1:
+      !!window
+        .PokeMisteryRL_CoreBridge
+        ?.part1Ready,
+
+
+    TEAM:
+      !!window
+        .PokeMisteryRL
+        ?.TeamRoster,
+
+
+    LEVEL:
+      typeof window
+        .PokeMisteryRL_LevelSystem,
+
+
+    SKILL:
+      typeof window
+        .PokeMisteryRL_SkillSystem,
+
+
+    ITEMS:
+      !!window.PokeMisteryRL_Items,
+
+
+    CORE_2:
+      !!window
+        .PokeMisteryRL_CoreBridge
+        ?.part2Ready,
+
+
+    RECRUITMENT:
+      typeof window
+        .showRecruitmentPrompt,
+
+
+    EQUIP_S2:
+      typeof window
+        .equipAsSecond,
+
+
+    START:
+      typeof window.start
+
+  });
+
+
+  if (
+    typeof window.start ===
+    "function"
+  ) {
+
+    boot.textContent =
+      "✅ Sistema pronto";
+
+  } else {
+
+    boot.textContent =
+      "⚠️ CORE caricato — start() non esposto";
+
+  }
+
+
+})();
+
+</script>
+
+
+</body>
+
+</html>
 
 
 
