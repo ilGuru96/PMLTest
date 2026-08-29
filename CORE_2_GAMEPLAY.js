@@ -4606,3 +4606,83 @@ document.addEventListener("DOMContentLoaded", () => {
 
   },true);
 })();
+
+
+/* ============================================================
+   GLOBAL WINDOW API - COMPLETE COMPATIBILITY EXPORTS
+   ------------------------------------------------------------
+   Esporta verso window le funzioni già definite dal CORE 2 e
+   richieste dai markup generati dinamicamente / HTML.
+   Non crea una seconda implementazione e non altera la logica.
+   ============================================================ */
+(function(){
+
+  const api = {
+    start: typeof startPokemon === "function"
+      ? startPokemon
+      : PokeMisteryRL?.Run?.startPokemon,
+
+    startPokemon: typeof startPokemon === "function"
+      ? startPokemon
+      : PokeMisteryRL?.Run?.startPokemon,
+
+    pick,
+    next,
+    flee,
+    skill,
+    rifugio,
+    upgradeSkill,
+    addFel,
+    consumeFel,
+    toggleRunLog,
+
+    shop,
+    buyShopItem,
+    eggEvent,
+
+    getPokemon,
+    getActivePokemon,
+    getTeamStats,
+    renderMap: render,
+    refreshBottomPanel,
+
+    evolvePokemon,
+    checkEvolve,
+    closeEvolutionPrompt,
+
+    openPokeInfo,
+    closePokeInfo,
+
+    releasePoke,
+    swapToActive,
+    equipAsSecond,
+    unequipSecond,
+    releaseSecond,
+
+    openStarterPreview,
+    openSecondPreview,
+    openTeamPreview,
+
+    quickReset: PokeMisteryRL?.Run?.quickReset,
+    goMenu: PokeMisteryRL?.Run?.goMenu,
+
+    openQuickItemDetail: window.openQuickItemDetail,
+    equipQuickItem: window.equipQuickItem,
+
+    openBottomInventory: window.openBottomInventory
+  };
+
+  Object.keys(api).forEach(function(name){
+    if(typeof api[name] === "function"){
+      window[name] = api[name];
+    }
+  });
+
+  window.PKM_RUN = PKM_RUN;
+
+  window.PokeMisteryRL_CoreBridge =
+    window.PokeMisteryRL_CoreBridge || {};
+
+  window.PokeMisteryRL_CoreBridge.part2Ready = true;
+
+})();
