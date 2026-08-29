@@ -5,149 +5,81 @@
 <section id="menu"><h1>⚡ PokeMisteryRL</h1><p class="subtitle">ROGUELIKE ADVENTURE</p><button id="startButton" type="button">🎲 RUN CASUALE</button><div id="boot">Caricamento sistema...</div></section>
 <section id="game" class="hidden"><div id="eventLog"></div><div class="map-wrap"><svg id="mapSvg" aria-hidden="true"></svg><div id="map" aria-label="Mappa della run"></div></div><div id="bottomContainer"></div><div><div id="runLogHeader" onclick="toggleRunLog()">LOG RUN ▼</div><div id="runLogContent"></div></div></section>
 <div id="modal" class="hidden"><div id="modalContent"></div></div>
-<!-- =========================================================
-       POKÉMON PREVIEW
-       ========================================================= -->
+<section id="pokePreview" class="hidden" aria-hidden="true">
 
-  <section
-    id="pokePreview"
-    class="hidden"
-    aria-hidden="true"
-  >
+  <div class="pp-box">
 
-    <div class="pp-box">
+    <div class="pp-top">
 
-      <!-- HEADER -->
-
-      <div class="pp-top">
-
-        <div class="pp-sprite-wrap">
-
-          <img
-            id="ppSprite"
-            src=""
-            alt="Pokémon"
-          >
-
-        </div>
-
-        <div class="pp-info">
-
-          <h3 id="ppName">-</h3>
-
-          <span
-            id="ppLevel"
-            class="pp-lv"
-          >
-            LV 1
-          </span>
-
-          <div
-            id="ppTypes"
-            class="pp-types"
-          ></div>
-
-          <div class="pp-hp">
-
-            <div
-              id="ppHpFill"
-              class="pp-fill"
-            ></div>
-
-          </div>
-
-          <small id="ppHpText">
-            0/0
-          </small>
-
-        </div>
-
-        <button
-          class="pp-close"
-          onclick="closeTeamPreview()"
-          aria-label="Chiudi"
+      <div class="pp-sprite-wrap">
+        <img
+          id="ppSprite"
+          src=""
+          alt="Pokémon"
         >
-          ✕
-        </button>
+      </div>
+
+      <div class="pp-info">
+
+        <h3 id="ppName">-</h3>
+
+        <span id="ppLevel" class="pp-lv">
+          LV 1
+        </span>
+
+        <div id="ppTypes" class="pp-types"></div>
+
+        <div class="pp-hp">
+          <div id="ppHpFill" class="pp-fill"></div>
+        </div>
+
+        <small id="ppHpText">
+          0/0
+        </small>
 
       </div>
 
-      <!-- STATISTICHE -->
+      <button
+        type="button"
+        class="pp-close"
+        onclick="closeTeamPreview()"
+        aria-label="Chiudi"
+      >
+        ✕
+      </button>
 
-      <div class="pp-stats">
+    </div>
 
-        <div>
-          ATK
-          <b id="ppk">0</b>
-        </div>
+    <div class="pp-stats">
 
-        <div>
-          DEF
-          <b id="ppDef">0</b>
-        </div>
-
-        <div>
-          SPD
-          <b id="ppSpd">0</b>
-        </div>
-
+      <div>
+        ATK
+        <b id="ppk">0</b>
       </div>
 
-      <!-- =======================================================
-           INFO BOX / SKILL
-           ======================================================= -->
+      <div>
+        DEF
+        <b id="ppDef">0</b>
+      </div>
 
-      <div class="pp-custom">
-
-        <h4>Info Box</h4>
-
-        <div id="ppCustomContent">
-
-          <div class="pp-skills">
-
-            <div
-              id="ppSkill"
-              class="pp-skill-pill"
-            >
-
-              <span
-                id="ppSkillName"
-                class="pp-skill-name"
-              >
-                --
-              </span>
-
-              <span
-                id="ppSkillPower"
-                class="pp-skill-power"
-              >
-                PWR --
-              </span>
-
-            </div>
-
-          </div>
-
-          <div class="pp-actions">
-
-            <button id="btnMossa">
-              🔧 Mossa
-            </button>
-
-            <button class="danger">
-              Rilascia
-            </button>
-
-          </div>
-
-        </div>
-
+      <div>
+        SPD
+        <b id="ppSpd">0</b>
       </div>
 
     </div>
 
-  </section>
+    <div class="pp-custom">
 
+      <h4>Info Box</h4>
+
+      <div id="ppCustomContent"></div>
+
+    </div>
+
+  </div>
+
+</section>
 </main><div id="fatal" style="display:none;position:fixed;left:10px;right:10px;bottom:10px;z-index:9999;max-width:900px;margin:auto;padding:12px;background:#240d12;border:1px solid #a54b57;border-radius:8px;color:#ffdfe3;white-space:pre-wrap;font:12px monospace"></div>
 <script src="./DB_PKM.js"></script><script>if(typeof PKM_ALL!=="undefined")window.PKM_ALL=PKM_ALL;</script>
 <script src="./MOSSE_PKM.js"></script><script src="./CORE_1_BASE.js"></script>
