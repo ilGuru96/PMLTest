@@ -5157,7 +5157,7 @@ window.openSecondPreview = () => {
               type="button"
               class="s2-choice-card ${isCurrent ? "selected" : ""}"
               data-s2-index="${i}"
-              onclick="window.equipAsSecond(${i}); return false;"
+              onclick="PokeMisteryRL.TeamRoster.equipAsSecond(${i}); return false;"
             >
 
               <img
@@ -5562,7 +5562,7 @@ window.evolvePokemon = evolvePokemon; window.checkEvolve = checkEvolve;
 window.openPokeInfo = openPokeInfo; window.closePokeInfo = closePokeInfo;
 window.closeEvolutionPrompt = closeEvolutionPrompt;
 window.releasePoke = releasePoke; window.swapToActive = swapToActive;
-window.equipAsSecond = equipAsSecond;
+
 window.unequipSecond = unequipSecond;
 window.releaseSecond = releaseSecond;
 window.openSecondPreview = openSecondPreview;
@@ -6050,7 +6050,6 @@ document.addEventListener("DOMContentLoaded", () => {
   window.PKM_RUN = PKM_RUN;
 
 })();
-
 
 
 
