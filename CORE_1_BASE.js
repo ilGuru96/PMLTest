@@ -475,6 +475,9 @@ const unequipSecond = () => {
 
   // Prepara il Pokémon sconfitto per il reclutamento.
   // La cattura è sempre al 100%: l'unica scelta del giocatore è ACCETTARE o RIFIUTARE.
+  const captureDefeatedPokemon = (enemy) =>
+    prepareRecruitment(enemy);
+
   const prepareRecruitment = (
     enemy
   ) => {
@@ -638,6 +641,7 @@ const unequipSecond = () => {
     unequipSecond,
     releaseSecond,
     prepareRecruitment,
+    captureDefeatedPokemon,
     recruitPokemon
   };
 
@@ -822,10 +826,65 @@ PokeMisteryRL.Evo = (() => {
 
 
 
-const {
-  getCombinedTeam,
-  getTeamStats
-} = PokeMisteryRL.Team;
+/*
+ * TEAM API
+ * CORE 1 contiene ancora TeamRoster inline.
+ * La regione Team estratta espone invece PokeMisteryRL.Team.
+ * Per mantenere il CORE autonomo e compatibile con entrambe le forme,
+ * il modulo Team viene costruito qui soltanto se non è già presente.
+ */
+PokeMisteryRL.Team = PokeMisteryRL.Team || (() => {
+
+  const getCombinedTeam = () => {
+    if (!PKM_RUN) return [];
+
+    const team = [];
+
+    if (PKM_RUN.activePokemon) {
+      team.push(PKM_RUN.activePokemon);
+    }
+
+    if (PKM_RUN.secondActive) {
+      team.push(PKM_RUN.secondActive);
+    }
+
+    if (Array.isArray(PKM_RUN.teamSlots)) {
+      PKM_RUN.teamSlots.forEach(p => {
+        if (p) team.push(p);
+      });
+    }
+
+    return team;
+  };
+
+  const getTeamStats = () => {
+    const team = getCombinedTeam();
+
+    return team.reduce((stats, pokemon) => {
+      if (!pokemon?.stats) return stats;
+
+      stats.hp += Number(pokemon.stats.hp) || 0;
+      stats.atk += Number(pokemon.stats.atk) || 0;
+      stats.satk += Number(pokemon.stats.satk) || 0;
+      stats.dif += Number(pokemon.stats.dif) || 0;
+      stats.spd += Number(pokemon.stats.spd) || 0;
+
+      return stats;
+    }, {
+      hp: 0,
+      atk: 0,
+      satk: 0,
+      dif: 0,
+      spd: 0
+    });
+  };
+
+  return {
+    getCombinedTeam,
+    getTeamStats
+  };
+
+})();
 
 
 const {
