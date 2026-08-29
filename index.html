@@ -7385,21 +7385,38 @@ body.modal-child-open #pokePreview:not(:last-child){
        MENU PRINCIPALE
        ========================================================= -->
 
-  <main id="menu">
+<main id="menu">
 
-    <h1>CORE v7 CLEAN</h1>
+  <h1>CORE v7 CLEAN</h1>
 
-    <button onclick="start()">
-      🎲 RUN RANDOM
-    </button>
+  <button id="btnRunRandom" type="button">
+    🎲 RUN RANDOM
+  </button>
 
-    <button onclick="start(150)">
-      MEWTWO TEST
-    </button>
+  <button id="btnMewtwo" type="button">
+    MEWTWO TEST
+  </button>
 
-  </main>
+</main>
 
-  <!-- =========================================================
+<script>
+document.getElementById("btnRunRandom").addEventListener("click", function () {
+  if (typeof window.start === "function") {
+    window.start();
+  } else {
+    console.error("window.start non è disponibile");
+  }
+});
+
+document.getElementById("btnMewtwo").addEventListener("click", function () {
+  if (typeof window.start === "function") {
+    window.start(150);
+  } else {
+    console.error("window.start non è disponibile");
+  }
+});
+</script>
+    <!-- =========================================================
        GAME
        ========================================================= -->
 
