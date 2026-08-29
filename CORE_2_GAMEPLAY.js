@@ -4608,6 +4608,459 @@ document.addEventListener("DOMContentLoaded", () => {
 })();
 
 
+
+/* ============================================================
+   RECRUITMENT COMPATIBILITY
+   ============================================================
+   CORE 2 win() chiama window.showRecruitmentPrompt().
+   La funzione era presente nelle versioni precedenti del CORE
+   ma è assente da questa versione WINDOW FIXED.
+   ============================================================ */
+
+window.showRecruitmentPrompt = (
+  pokemon,
+  reward,
+  starter1,
+  starter2
+) => {
+
+  if(!pokemon){
+    return;
+  }
+
+  window._pendingRecruitment = {
+    pokemon,
+    reward,
+    starter1,
+    starter2
+  };
+
+  const typeText =
+    Array.isArray(pokemon.tipi)
+      ? pokemon.tipi.join(" / ")
+      : (pokemon.tipi || "Normale");
+
+  modal(`
+    <div class="recruitment-box">
+
+      <h2 class="recruitment-title">
+        NUOVO RECLUTAMENTO!
+      </h2>
+
+      <img
+        class="recruitment-sprite"
+        src="${sprite(pokemon.immagine)}"
+        alt="${pokemon.nome || "Pokémon"}"
+      >
+
+      <div class="recruitment-name">
+        ${pokemon.nome || "Pokémon"}
+      </div>
+
+      <div class="recruitment-type">
+        ${typeText}
+      </div>
+
+      <p class="recruitment-message">
+        Hai sconfitto questo Pokémon.<br>
+        Vuoi accettarlo nella tua squadra?
+      </p>
+
+      <div class="recruitment-actions">
+
+        <button
+          type="button"
+          onclick="acceptRecruitment()"
+        >
+          ✓ ACCETTA
+        </button>
+
+        <button
+          type="button"
+          class="reject"
+          onclick="rejectRecruitment()"
+        >
+          ✕ RIFIUTA
+        </button>
+
+      </div>
+
+    </div>
+  `);
+};
+
+
+window.acceptRecruitment = () => {
+
+  const pending =
+    window._pendingRecruitment;
+
+  if(!pending){
+    return;
+  }
+
+  const added =
+    PokeMisteryRL.TeamRoster.recruitPokemon(
+      pending.pokemon
+    );
+
+  if(!added){
+
+    /*
+     * Squadra piena.
+     * Manteniamo il pending e mostriamo le sostituzioni
+     * disponibili: S2 + slot riserva.
+     */
+    const options = [];
+
+    if(PKM_RUN?.secondActive){
+
+      options.push({
+        key: "second",
+        label: "S2",
+        pokemon: PKM_RUN.secondActive
+      });
+
+    }
+
+    (PKM_RUN?.teamSlots || []).forEach(
+      (p, i) => {
+
+        if(!p) return;
+
+        options.push({
+          key: String(i),
+          label: `SLOT ${i + 1}`,
+          pokemon: p
+        });
+
+      }
+    );
+
+    modal(`
+      <div class="recruitment-box">
+
+        <h2 class="recruitment-title">
+          SQUADRA PIENA
+        </h2>
+
+        <p class="recruitment-message">
+          Scegli quale Pokémon sostituire.
+        </p>
+
+        <div class="recruitment-actions"
+             style="flex-direction:column">
+
+          ${
+            options.length
+              ? options.map(
+                  option => `
+                    <button
+                      type="button"
+                      onclick="compareRecruitment('${option.key}')"
+                    >
+                      ${option.label} —
+                      ${option.pokemon.nome || "Pokémon"}
+                      <br>
+                      <small>
+                        LV ${
+                          PokeMisteryRL_LevelSystem.getLevel(
+                            option.pokemon
+                          )
+                        }
+                      </small>
+                    </button>
+                  `
+                ).join("")
+              : `
+                  <p>
+                    Nessun Pokémon sostituibile.
+                  </p>
+                `
+          }
+
+          <button
+            type="button"
+            class="reject"
+            onclick="rejectRecruitment()"
+          >
+            ✕ RIFIUTA
+          </button>
+
+        </div>
+
+      </div>
+    `);
+
+    return false;
+  }
+
+  const name =
+    pending.pokemon?.nome ||
+    "Pokémon";
+
+  const reward =
+    pending.reward || 0;
+
+  window._pendingRecruitment = null;
+
+  PokeMisteryRL.UI.refreshBottomPanel();
+
+  msg(
+    `⭐ ${name} è entrato nella squadra!`
+  );
+
+  modal(`
+    <div class="center victory-box">
+
+      <h2>
+        VITTORIA!
+      </h2>
+
+      <p>
+        ⭐ ${name} è entrato nella squadra!
+      </p>
+
+      <p>
+        +${reward}¥
+      </p>
+
+      <button
+        type="button"
+        onclick="next('Vittoria!')"
+      >
+        CONTINUA
+      </button>
+
+    </div>
+  `);
+
+  return true;
+};
+
+
+window.rejectRecruitment = () => {
+
+  const pending =
+    window._pendingRecruitment;
+
+  if(!pending){
+    return;
+  }
+
+  const name =
+    pending.pokemon?.nome ||
+    "Pokémon";
+
+  const reward =
+    pending.reward || 0;
+
+  window._pendingRecruitment = null;
+  window._pendingReplacement = null;
+
+  modal(`
+    <div class="center victory-box">
+
+      <h2>
+        VITTORIA!
+      </h2>
+
+      <p>
+        Hai rifiutato ${name}.
+      </p>
+
+      <p>
+        +${reward}¥
+      </p>
+
+      <button
+        type="button"
+        onclick="next('Vittoria!')"
+      >
+        CONTINUA
+      </button>
+
+    </div>
+  `);
+
+};
+
+
+window.compareRecruitment = (
+  target
+) => {
+
+  const pending =
+    window._pendingRecruitment;
+
+  if(!pending){
+    return;
+  }
+
+  let pokemon = null;
+  let label = "";
+
+  if(String(target) === "second"){
+
+    pokemon =
+      PKM_RUN?.secondActive ||
+      null;
+
+    label = "S2";
+
+  }else{
+
+    const index =
+      Number(target);
+
+    if(!Number.isInteger(index)){
+      return;
+    }
+
+    pokemon =
+      PKM_RUN?.teamSlots?.[index] ||
+      null;
+
+    label =
+      `SLOT ${index + 1}`;
+  }
+
+  if(!pokemon){
+    return;
+  }
+
+  window._pendingReplacement = {
+    target,
+    label,
+    pokemon
+  };
+
+  modal(`
+    <div class="recruitment-box">
+
+      <h2 class="recruitment-title">
+        SOSTITUZIONE
+      </h2>
+
+      <p>
+        Vuoi sostituire
+        <b>${pokemon.nome || "Pokémon"}</b>
+        (${label})
+        con
+        <b>${pending.pokemon.nome || "Pokémon"}</b>?
+      </p>
+
+      <img
+        class="recruitment-sprite"
+        src="${sprite(pending.pokemon.immagine)}"
+        alt="${pending.pokemon.nome || "Pokémon"}"
+      >
+
+      <div class="recruitment-actions">
+
+        <button
+          type="button"
+          onclick="confirmRecruitmentReplacement()"
+        >
+          ✓ CONFERMA
+        </button>
+
+        <button
+          type="button"
+          class="reject"
+          onclick="showRecruitmentPrompt(
+            window._pendingRecruitment.pokemon,
+            window._pendingRecruitment.reward,
+            window._pendingRecruitment.starter1,
+            window._pendingRecruitment.starter2
+          )"
+        >
+          ← INDIETRO
+        </button>
+
+      </div>
+
+    </div>
+  `);
+};
+
+
+window.confirmRecruitmentReplacement = () => {
+
+  const pending =
+    window._pendingRecruitment;
+
+  const replacement =
+    window._pendingReplacement;
+
+  if(
+    !pending ||
+    !replacement
+  ){
+    return;
+  }
+
+  const target =
+    replacement.target === "second"
+      ? "second"
+      : Number(replacement.target);
+
+  const replaced =
+    PokeMisteryRL.TeamRoster.replacePokemon(
+      target,
+      pending.pokemon
+    );
+
+  if(!replaced){
+
+    msg(
+      "Impossibile completare la sostituzione."
+    );
+
+    return;
+  }
+
+  const name =
+    pending.pokemon?.nome ||
+    "Pokémon";
+
+  const reward =
+    pending.reward || 0;
+
+  window._pendingRecruitment = null;
+  window._pendingReplacement = null;
+
+  PokeMisteryRL.UI.refreshBottomPanel();
+
+  modal(`
+    <div class="center victory-box">
+
+      <h2>
+        VITTORIA!
+      </h2>
+
+      <p>
+        ⭐ ${name} è entrato nella squadra!
+      </p>
+
+      <p>
+        +${reward}¥
+      </p>
+
+      <button
+        type="button"
+        onclick="next('Vittoria!')"
+      >
+        CONTINUA
+      </button>
+
+    </div>
+  `);
+
+  return true;
+};
+
+
 /* ============================================================
    GLOBAL WINDOW API - COMPLETE COMPATIBILITY EXPORTS
    ------------------------------------------------------------
