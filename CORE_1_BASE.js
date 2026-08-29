@@ -999,4 +999,17 @@ const skill =
    CORE SPLIT HANDSHAKE - PART 1 READY
    ============================================================ */
 window.PokeMisteryRL_CoreBridge = window.PokeMisteryRL_CoreBridge || {};
+
+/* ============================================================
+   GLOBAL WINDOW API - COMPATIBILITY EXPORTS
+   Esporta solo funzioni già esistenti nel CORE.
+   Nessuna logica di gioco viene modificata.
+   ============================================================ */
+window.closeModal = closeModal;
+window.toggleRunLog = toggleRunLog;
+window.closeTeamPreview = window.closeTeamPreview || (() => {
+  $("pokePreview")?.classList.add("hidden");
+});
+window.PKM_RUN = PKM_RUN;
+
 window.PokeMisteryRL_CoreBridge.part1Ready = true;
