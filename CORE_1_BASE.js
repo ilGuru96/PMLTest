@@ -4,6 +4,7 @@
    ============================================================ */
 
 const PokeMisteryRL = {};
+window.PokeMisteryRL = PokeMisteryRL;
 // #region 01 - CONFIGURAZIONE + GLOBALI
 PokeMisteryRL.Config = (() => {
   const SPRITE_BASE_URL = "https://cdn.jsdelivr.net/gh/ilGuru96/spritemon/";
@@ -280,8 +281,6 @@ const { getStatsFromBST, createPokemonInstance, getActivePokemon, getFinalStats,
 // #region 06 - LEVEL SYSTEM - AUTONOMO - FINAL
 
 ;
-
-window.PokeMisteryRL_LevelSystem = PokeMisteryRL_LevelSystem;
 
 // #endregion
 // #region 07 - STATO RUN
