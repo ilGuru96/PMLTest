@@ -153,7 +153,6 @@ const PKM_ALL = {
     151: { id: 151, nome: "Mew", immagine: "mew.png", tipi: ["psico"], regione: "kanto", stage: 3, bst: 600, evoluzione: null }
   }
 };
-};
 // EXPORT CORRETTI
 window.PKM_ALL_DATA = PKM_ALL;
 window.PKM_ALL = PKM_ALL.kanto;
