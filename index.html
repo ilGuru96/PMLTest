@@ -3,272 +3,207 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PokeMisteryRL — GitHub Pages CORE Test</title>
-
+<title>PokeMisteryRL — CORE 1/2 Rewire Test</title>
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;background:#050a14;color:#fff;font-family:monospace}
 body{display:flex;justify-content:center;padding:12px}
-button{font:inherit;color:#fff;background:#0d2035;border:1px solid #315579;border-radius:8px;padding:9px 12px;cursor:pointer}
-button:hover{background:#153453}
-button:disabled{opacity:.45;cursor:not-allowed}
 #gameBox{width:100%;max-width:450px}
 #menu{min-height:600px;display:flex;align-items:center;justify-content:center}
 .menu-box{width:100%;padding:24px;border:1px solid #315579;border-radius:14px;background:#0a1628;text-align:center}
-.menu-box h1{margin:0 0 8px}
-.menu-box p{font-size:10px;opacity:.65;line-height:1.5}
-#bootStatus{margin:16px 0;text-align:left;font-size:10px;line-height:1.7}
-.status-ok{color:#65e6a5}
-.status-bad{color:#ff7180}
-#startButton{width:100%;font-weight:bold;margin-top:8px}
-
-#game{width:100%}
-#eventLog{min-height:20px;margin:8px 0;text-align:center;font-size:11px}
-.map-wrap{position:relative;min-height:440px;overflow:hidden;background:#0a1628;border:1px solid #315579;border-radius:12px;padding:16px 10px}
-#map{position:relative;z-index:2;min-height:400px;display:flex;flex-direction:column;justify-content:space-between;gap:10px}
-#mapSvg{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
-#bottomContainer{width:100%;margin-top:8px}
-#modal,#pokePreview{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:12px;background:rgba(0,0,0,.78)}
-#modalContent{width:100%;max-width:450px}
-.center,.preview-box{width:100%;max-width:450px;max-height:90vh;overflow:auto;background:#0a1628;border:1px solid #315579;border-radius:12px;padding:14px}
-#pokePreview .preview-box{text-align:center}
-#ppSprite{width:96px;height:96px;object-fit:contain;image-rendering:pixelated}
-.type-badge{display:inline-block;padding:2px 5px;margin:2px;border-radius:4px;font-size:8px}
-.bar{width:100%;height:7px;margin:4px 0;overflow:hidden;border-radius:5px;background:#111}
-.bar>div{height:100%;background:#55d9ff}
-#runLogHeader{padding:7px 8px;background:#0d2035;font-size:10px;cursor:pointer;border:1px solid #315579;border-radius:8px}
-#runLogContent{display:none;max-height:120px;overflow:auto;padding:6px 8px;font-size:9px}
-.hidden{display:none!important}
+button{font:inherit;color:#fff;background:#0d2035;border:1px solid #315579;border-radius:8px;padding:10px 14px;cursor:pointer;width:100%;margin-top:10px}
+button:disabled{opacity:.45;cursor:not-allowed}
+#bootStatus{margin:18px 0;text-align:left;font-size:11px;line-height:1.8}
+.ok{color:#65e6a5}.bad{color:#ff7180}.wait{color:#ffd35a}
 #fatal{display:none;position:fixed;left:10px;right:10px;bottom:10px;z-index:9999;max-width:900px;margin:auto;padding:12px;background:#240d12;border:1px solid #a54b57;border-radius:8px;color:#ffdfe3;white-space:pre-wrap;font:12px monospace}
+.hidden{display:none!important}
+#game{width:100%}
+#eventLog{min-height:20px;text-align:center}
+.map-wrap{position:relative;min-height:440px;overflow:hidden;background:#0a1628;border:1px solid #315579;border-radius:12px;padding:16px 10px}
+#map{position:relative;z-index:2;min-height:400px}
+#mapSvg{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+#bottomContainer{margin-top:8px}
+#modal,#pokePreview{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:12px;background:rgba(0,0,0,.78)}
+#modalContent,.preview-box{width:100%;max-width:450px;background:#0a1628;border:1px solid #315579;border-radius:12px;padding:14px}
+#pokePreview{display:none}
+#ppSprite{width:96px;height:96px;object-fit:contain;image-rendering:pixelated}
 </style>
 </head>
-
 <body>
 <main id="gameBox">
+<section id="menu">
+<div class="menu-box">
+<h1>⚡ PokeMisteryRL</h1>
+<p>CORE 1 → TEAM → CORE 2</p>
+<div id="bootStatus">
+<div id="b1" class="wait">⏳ DB Pokémon</div>
+<div id="b2" class="wait">⏳ DB Mosse</div>
+<div id="b3" class="wait">⏳ CORE 1</div>
+<div id="b4" class="wait">⏳ TEAM REGION</div>
+<div id="b5" class="wait">⏳ LEVEL SYSTEM</div>
+<div id="b6" class="wait">⏳ SKILL SYSTEM</div>
+<div id="b7" class="wait">⏳ DB ITEMS</div>
+<div id="b8" class="wait">⏳ CORE 2</div>
+<div id="b9" class="wait">⏳ start()</div>
+</div>
+<button id="startButton" disabled>⏳ TEST IN CORSO...</button>
+</div>
+</section>
 
-  <section id="menu">
-    <div class="menu-box">
-      <h1>⚡ PokeMisteryRL</h1>
-      <p>TEST DIRETTO DEI FILE DEL REPOSITORY<br>GitHub Pages / main</p>
+<section id="game" class="hidden">
+<div id="eventLog"></div>
+<div class="map-wrap"><svg id="mapSvg"></svg><div id="map"></div></div>
+<div id="bottomContainer"></div>
+<div id="runLogHeader">LOG RUN</div>
+<div id="runLogContent"></div>
+</section>
 
-      <div id="bootStatus">
-        <div id="s1">⏳ DB Pokémon</div>
-        <div id="s2">⏳ DB Mosse</div>
-        <div id="s3">⏳ CORE 1</div>
-        <div id="s4">⏳ LEVEL SYSTEM</div>
-        <div id="s5">⏳ SKILL SYSTEM</div>
-        <div id="s6">⏳ DB ITEMS</div>
-        <div id="s7">⏳ CORE 2</div>
-        <div id="s8">⏳ start()</div>
-      </div>
-
-      <button id="startButton" type="button" disabled>
-        ⏳ CARICAMENTO CORE...
-      </button>
-    </div>
-  </section>
-
-  <section id="game" class="hidden">
-    <div id="eventLog"></div>
-
-    <div class="map-wrap">
-      <svg id="mapSvg"></svg>
-      <div id="map"></div>
-    </div>
-
-    <div id="bottomContainer"></div>
-
-    <div style="margin-top:8px">
-      <div id="runLogHeader" onclick="toggleRunLog()">LOG RUN ▼</div>
-      <div id="runLogContent"></div>
-    </div>
-  </section>
-
-  <div id="modal" class="hidden">
-    <div id="modalContent"></div>
-  </div>
-
-  <div id="pokePreview" class="hidden">
-    <div class="preview-box">
-      <img id="ppSprite" src="" alt="">
-      <h2 id="ppName">—</h2>
-      <div id="ppLevel">LV 1</div>
-      <div id="ppTypes"></div>
-      <div class="bar"><div id="ppHpFill" style="width:100%"></div></div>
-      <div id="ppHpText">0/0</div>
-      <div>ATK <b id="ppk">0</b></div>
-      <div>DEF <b id="ppDef">0</b></div>
-      <div>SPD <b id="ppSpd">0</b></div>
-      <div id="ppCustomContent"></div>
-      <button type="button" onclick="closeTeamPreview();busy=0;PokeMisteryRL.UI.render()">CHIUDI</button>
-    </div>
-  </div>
-
+<div id="modal" class="hidden"><div id="modalContent"></div></div>
+<div id="pokePreview" class="hidden"><div class="preview-box">
+<img id="ppSprite" src="" alt="">
+<h2 id="ppName">—</h2>
+<div id="ppLevel">LV 1</div>
+<div id="ppTypes"></div>
+<div id="ppCustomContent"></div>
+<button type="button" onclick="closeTeamPreview?.()">CHIUDI</button>
+</div></div>
 </main>
-
 <div id="fatal"></div>
 
-<!-- =========================================================
-     I FILE JS SONO CARICATI LOCALMENTE DA GITHUB PAGES.
-     NESSUN CODICE DEL CORE È COPIATO QUI DENTRO.
-     ========================================================= -->
-
-<!-- 01 — database Pokémon -->
+<!-- DATABASE -->
 <script src="./DB_PKM.js"></script>
+<script src="./MOSSE_PKM.js"></script>
 
-<!--
-  DB_PKM.js usa:
-      const PKM_ALL = ...
+<!-- CORE 1 -->
+<script src="./CORE_1_BASE.js"></script>
 
-  CORE_1_BASE.js cerca:
-      window.PKM_ALL
+<!-- REGIONS / DB USED BY CORE 1/2 -->
+<script src="./LEVEL_SYSTEM_REGION.js"></script>
+<script src="./SKILL_SYSTEM_REGION.js"></script>
+<script src="./DB_ITEMS.js"></script>
 
-  Questo è SOLO un bridge di compatibilità dell'HTML.
-  DB_PKM.js non viene modificato.
--->
 <script>
-if (typeof PKM_ALL !== "undefined") {
-  window.PKM_ALL = PKM_ALL;
+/*
+ * REWIRE TEST
+ *
+ * CORE_1_BASE.js crea PokeMisteryRL e TeamRoster inline.
+ * Il file TEAM_SYSTEM_REGION.js non va caricato sopra CORE 1:
+ * richiede PokeMisteryRL già creato e il CORE 1 contiene ancora
+ * la copia inline. Per testare il collegamento senza doppiare il
+ * sistema, forniamo qui soltanto il modulo Team minimo che CORE 1
+ * richiede: getCombinedTeam + getTeamStats.
+ *
+ * Non sostituisce TeamRoster e non duplica la regione estratta.
+ */
+if (window.PokeMisteryRL && !window.PokeMisteryRL.Team) {
+  window.PokeMisteryRL.Team = (() => {
+    const getCombinedTeam = () => {
+      if (!window.PKM_RUN) return [];
+      const out = [];
+      if (window.PKM_RUN.activePokemon) out.push(window.PKM_RUN.activePokemon);
+      if (window.PKM_RUN.secondActive) out.push(window.PKM_RUN.secondActive);
+      if (Array.isArray(window.PKM_RUN.teamSlots)) {
+        window.PKM_RUN.teamSlots.forEach(p => { if (p) out.push(p); });
+      }
+      return out;
+    };
+
+    const getTeamStats = () => {
+      const team = getCombinedTeam();
+      return team.reduce((acc,p) => {
+        if (!p?.stats) return acc;
+        acc.hp += Number(p.stats.hp)||0;
+        acc.atk += Number(p.stats.atk)||0;
+        acc.satk += Number(p.stats.satk)||0;
+        acc.dif += Number(p.stats.dif)||0;
+        acc.spd += Number(p.stats.spd)||0;
+        return acc;
+      }, {hp:0,atk:0,satk:0,dif:0,spd:0});
+    };
+
+    return {getCombinedTeam,getTeamStats};
+  })();
 }
 </script>
 
-<!-- 02 — database mosse -->
-<script src="./MOSSE_PKM.js"></script>
-
-<!-- 03 — CORE BASE -->
-<script src="./CORE_1_BASE.js"></script>
-
-<!-- 04 — regioni richieste dal CORE -->
-<script src="./LEVEL_SYSTEM_REGION.js"></script>
-<script src="./SKILL_SYSTEM_REGION.js"></script>
-
-<!-- 05 — database oggetti -->
-<script src="./DB_ITEMS.js"></script>
-
-<!-- 06 — CORE GAMEPLAY -->
+<!-- CORE 2: loaded only after the Team bridge exists -->
 <script src="./CORE_2_GAMEPLAY.js"></script>
-
-<!--
-  TEAM_SYSTEM_REGION.js e RECRUIT_SYSTEM_REGION.js NON vengono caricati.
-  Nei file attuali del repository sono regioni estratte ma il CORE contiene
-  ancora le implementazioni inline; caricarle adesso significa duplicare
-  Team/TeamRoster/Recruitment. I due file stessi avvertono di non caricarli
-  insieme alla vecchia copia inline prima del rewiring del CORE.
--->
 
 <script>
 (function(){
-
-  const set = (id, ok, text) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.className = ok ? "status-ok" : "status-bad";
-    el.textContent = (ok ? "✅ " : "❌ ") + text;
+  const $id = id => document.getElementById(id);
+  const mark = (id,ok,text) => {
+    const e=$id(id); if(!e)return;
+    e.className=ok?"ok":"bad";
+    e.textContent=(ok?"✅ ":"❌ ")+text;
   };
 
-  const startButton = document.getElementById("startButton");
+  window.addEventListener("error", e => {
+    const box=$id("fatal");
+    box.style.display="block";
+    box.textContent="ERRORE JAVASCRIPT\n\n"+(e.error?.stack||e.message||String(e.error||e));
+    console.error(e.error||e.message||e);
+  });
 
-  function bootCheck(){
+  window.addEventListener("unhandledrejection", e => {
+    const box=$id("fatal");
+    box.style.display="block";
+    box.textContent="PROMISE REJECTION\n\n"+(e.reason?.stack||e.reason||String(e.reason));
+    console.error(e.reason);
+  });
 
-    const dbOk =
-      typeof PKM_ALL !== "undefined" &&
-      !!window.PKM_ALL;
+  const db = !!window.PKM_ALL;
+  const moves = typeof SKILL_DB !== "undefined";
+  const core1 = !!window.PokeMisteryRL && !!window.PokeMisteryRL_CoreBridge?.part1Ready;
+  const team = !!window.PokeMisteryRL?.Team &&
+               typeof window.PokeMisteryRL.Team.getCombinedTeam==="function" &&
+               !!window.PokeMisteryRL.TeamRoster;
+  const level = typeof PokeMisteryRL_LevelSystem!=="undefined";
+  const skill = typeof PokeMisteryRL_SkillSystem!=="undefined";
+  const items = !!window.PokeMisteryRL_Items;
+  const core2 = !!window.PokeMisteryRL_CoreBridge?.part2Ready;
+  const start = typeof window.start==="function";
 
-    const movesOk =
-      typeof SKILL_DB !== "undefined";
+  mark("b1",db,"DB Pokémon: "+(db?"caricato":"NON caricato"));
+  mark("b2",moves,"DB Mosse: "+(moves?"caricato":"NON caricato"));
+  mark("b3",core1,"CORE 1: "+(core1?"READY":"NON READY"));
+  mark("b4",team,"TEAM: "+(team?"COLLEGATO":"NON COLLEGATO"));
+  mark("b5",level,"LEVEL SYSTEM: "+(level?"caricato":"NON caricato"));
+  mark("b6",skill,"SKILL SYSTEM: "+(skill?"caricato":"NON caricato"));
+  mark("b7",items,"DB ITEMS: "+(items?"caricato":"NON caricato"));
+  mark("b8",core2,"CORE 2: "+(core2?"READY":"NON READY"));
+  mark("b9",start,"start(): "+(start?"FUNCTION":"NON DISPONIBILE"));
 
-    const core1Ok =
-      !!window.PokeMisteryRL &&
-      window.PokeMisteryRL_CoreBridge?.part1Ready === true;
+  console.table({
+    PKM_ALL:!!window.PKM_ALL,
+    SKILL_DB:typeof SKILL_DB,
+    PokeMisteryRL:!!window.PokeMisteryRL,
+    Team:!!window.PokeMisteryRL?.Team,
+    TeamRoster:!!window.PokeMisteryRL?.TeamRoster,
+    CORE_1_READY:!!window.PokeMisteryRL_CoreBridge?.part1Ready,
+    LEVEL_SYSTEM:typeof PokeMisteryRL_LevelSystem,
+    SKILL_SYSTEM:typeof PokeMisteryRL_SkillSystem,
+    ITEMS:!!window.PokeMisteryRL_Items,
+    CORE_2_READY:!!window.PokeMisteryRL_CoreBridge?.part2Ready,
+    start:typeof window.start
+  });
 
-    const levelOk =
-      typeof PokeMisteryRL_LevelSystem !== "undefined";
-
-    const skillOk =
-      typeof PokeMisteryRL_SkillSystem !== "undefined";
-
-    const itemsOk =
-      !!window.PokeMisteryRL_Items?.DB_ITEMS;
-
-    const core2Ok =
-      window.PokeMisteryRL_CoreBridge?.part2Ready === true;
-
-    const startOk =
-      typeof window.start === "function";
-
-    set("s1", dbOk, "DB Pokémon: " + (dbOk ? "caricato" : "NON caricato"));
-    set("s2", movesOk, "DB Mosse: " + (movesOk ? "caricato" : "NON caricato"));
-    set("s3", core1Ok, "CORE 1: " + (core1Ok ? "READY" : "NON READY"));
-    set("s4", levelOk, "LEVEL SYSTEM: " + (levelOk ? "caricato" : "NON caricato"));
-    set("s5", skillOk, "SKILL SYSTEM: " + (skillOk ? "caricato" : "NON caricato"));
-    set("s6", itemsOk, "DB ITEMS: " + (itemsOk ? "caricato" : "NON caricato"));
-    set("s7", core2Ok, "CORE 2: " + (core2Ok ? "READY" : "NON READY"));
-    set("s8", startOk, "start(): " + (startOk ? "FUNCTION" : "NON DISPONIBILE"));
-
-    if (core2Ok && startOk) {
-      startButton.disabled = false;
-      startButton.textContent = "▶ AVVIA RUN";
-    } else {
-      startButton.disabled = true;
-      startButton.textContent = "❌ CORE NON PRONTO";
-    }
-
-    console.table({
-      PKM_ALL: typeof PKM_ALL,
-      window_PKM_ALL: typeof window.PKM_ALL,
-      SKILL_DB: typeof SKILL_DB,
-      PokeMisteryRL: typeof window.PokeMisteryRL,
-      CORE_1_READY: window.PokeMisteryRL_CoreBridge?.part1Ready,
-      LEVEL_SYSTEM: typeof PokeMisteryRL_LevelSystem,
-      SKILL_SYSTEM: typeof PokeMisteryRL_SkillSystem,
-      ITEMS: typeof window.PokeMisteryRL_Items,
-      CORE_2_READY: window.PokeMisteryRL_CoreBridge?.part2Ready,
-      start: typeof window.start
-    });
+  if(core2 && start){
+    $id("startButton").disabled=false;
+    $id("startButton").textContent="▶ AVVIA RUN";
+    $id("startButton").onclick=()=>{
+      try{ window.start(); }
+      catch(err){
+        $id("fatal").style.display="block";
+        $id("fatal").textContent="ERRORE DURANTE start()\n\n"+(err.stack||err);
+        console.error(err);
+      }
+    };
+  } else {
+    $id("startButton").textContent="❌ CORE NON PRONTO";
   }
-
-  startButton.addEventListener("click", function(){
-    if (typeof window.start !== "function") {
-      showFatal("CORE caricato ma window.start non è una funzione.");
-      return;
-    }
-
-    try {
-      window.start();
-    } catch (err) {
-      showFatal(
-        "ERRORE DURANTE start()\n\n" +
-        (err?.stack || err)
-      );
-      console.error(err);
-    }
-  });
-
-  window.addEventListener("error", function(e){
-    showFatal(
-      "ERRORE JAVASCRIPT\n\n" +
-      (e.error?.stack || e.message || String(e.error || e))
-    );
-  });
-
-  window.addEventListener("unhandledrejection", function(e){
-    showFatal(
-      "PROMISE REJECTION\n\n" +
-      (e.reason?.stack || e.reason || String(e.reason))
-    );
-  });
-
-  function showFatal(text){
-    const el = document.getElementById("fatal");
-    if (!el) return;
-    el.style.display = "block";
-    el.textContent = text;
-  }
-
-  bootCheck();
-
 })();
 </script>
-
 </body>
 </html>
+
