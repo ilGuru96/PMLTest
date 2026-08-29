@@ -1,7 +1,23 @@
-/* PokeMisteryRL - extracted RECRUITMENT UI region
- * Contains the post-fight recruitment/replacement screens.
- * Depends on PokeMisteryRL.TeamRoster, modal(), sprite(), next(), render().
- * DO NOT load alongside the old inline copy until Core is rewired.
+/* PokeMisteryRL - RECRUITMENT SYSTEM REGION
+ * Post-fight recruitment / replacement UI.
+ *
+ * DEPENDENCIES CHECKED AGAINST CURRENT CORE:
+ * - PKM_RUN                 -> CORE 1
+ * - PokeMisteryRL.TeamRoster -> CORE 1
+ * - PokeMisteryRL.UI        -> CORE 2
+ * - modal()                 -> CORE 1
+ * - msg()                   -> CORE 1
+ * - sprite()                -> CORE 1
+ * - next()                  -> CORE 2 exported on window
+ * - render()                -> CORE 2
+ * - renderTeamSlots()       -> CORE 1
+ * - recruitCard()           -> CORE 2
+ * - recruitLevel()          -> CORE 2
+ * - getFullTeamSwitchOptions() -> CORE 2
+ * - showFullTeamSwitch()    -> CORE 2
+ *
+ * Load this file AFTER CORE_1_BASE and CORE_2_GAMEPLAY.
+ * Do not load another recruitment implementation at the same time.
  */
 
 window.showRecruitmentPrompt = (
@@ -97,9 +113,6 @@ window.compareRecruitment = (
   modal(`
     <div class="recruitment-box recruit-compare">
 
-
-
-
       <h2>
         🔄 CONFRONTA
       </h2>
@@ -151,15 +164,13 @@ window.compareRecruitment = (
   return true;
 };
 
-
 window.backRecruitmentSelection = () => {
 
   if(!window._pendingRecruitment){
     return;
   }
 
-  window._pendingReplacement =
-    null;
+  window._pendingReplacement = null;
 
   showFullTeamSwitch();
 };
@@ -240,11 +251,8 @@ window.confirmRecruitReplacement = () => {
   const reward =
     pending.reward || 0;
 
-  window._pendingRecruitment =
-    null;
-
-  window._pendingReplacement =
-    null;
+  window._pendingRecruitment = null;
+  window._pendingReplacement = null;
 
   modal(`
     <div class="center victory-box">
@@ -263,7 +271,7 @@ window.confirmRecruitReplacement = () => {
 
       <button
         type="button"
-        onclick="next('Vittoria!')"
+        onclick="window.next('Vittoria!')"
       >
         CONTINUA
       </button>
@@ -273,7 +281,6 @@ window.confirmRecruitReplacement = () => {
 
   return true;
 };
-
 
 window.acceptRecruitment = () => {
 
@@ -301,8 +308,9 @@ window.acceptRecruitment = () => {
   const reward =
     pending.reward || 0;
 
-  window._pendingRecruitment =
-    null;
+  window._pendingRecruitment = null;
+
+  PokeMisteryRL.UI.refreshBottomPanel();
 
   modal(`
     <div class="center victory-box">
@@ -321,7 +329,7 @@ window.acceptRecruitment = () => {
 
       <button
         type="button"
-        onclick="next('Vittoria!')"
+        onclick="window.next('Vittoria!')"
       >
         CONTINUA
       </button>
@@ -342,11 +350,8 @@ window.rejectRecruitment = () => {
   const reward =
     pending.reward || 0;
 
-  window._pendingRecruitment =
-    null;
-
-  window._pendingReplacement =
-    null;
+  window._pendingRecruitment = null;
+  window._pendingReplacement = null;
 
   modal(`
     <div class="center victory-box">
@@ -366,7 +371,7 @@ window.rejectRecruitment = () => {
 
       <button
         type="button"
-        onclick="next('Vittoria!')"
+        onclick="window.next('Vittoria!')"
       >
         CONTINUA
       </button>
