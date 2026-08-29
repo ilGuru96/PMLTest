@@ -1,611 +1,1089 @@
 <!doctype html>
 <html lang="it">
-
 <head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PokeMisteryRL</title>
 
-  <meta charset="utf-8">
+<style>
+*{box-sizing:border-box}
 
-  <meta
-    name="viewport"
-    content="width=device-width,initial-scale=1"
-  >
+html,body{
+  margin:0;
+  min-height:100%;
+  background:#050a14;
+  color:#fff;
+  font-family:monospace;
+}
 
-  <title>PokeMisteryRL</title>
+body{
+  display:flex;
+  justify-content:center;
+  padding:10px;
+}
 
+button{
+  font:inherit;
+  color:inherit;
+  background:#0d2035;
+  border:1px solid #315579;
+  border-radius:8px;
+  padding:8px 12px;
+  cursor:pointer;
+}
+
+button:hover{background:#153453}
+button:disabled{opacity:.45;cursor:default}
+.hidden{display:none!important}
+
+#gameBox{
+  width:100%;
+  max-width:450px;
+  min-height:600px;
+  position:relative;
+}
+
+/* =========================================================
+   MENU
+   ========================================================= */
+
+#menu{
+  min-height:600px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.menu-box{
+  width:100%;
+  padding:24px;
+  border:1px solid #315579;
+  border-radius:14px;
+  background:#0a1628;
+  text-align:center;
+  box-shadow:0 12px 35px rgba(0,0,0,.35);
+}
+
+.menu-box h1{
+  margin:0 0 8px;
+  font-size:25px;
+}
+
+.menu-box p{
+  opacity:.65;
+  font-size:11px;
+  line-height:1.5;
+}
+
+.menu-box button{
+  width:100%;
+  margin-top:8px;
+  font-weight:bold;
+}
+
+/* =========================================================
+   GAME / MAPPA
+   ========================================================= */
+
+#game{width:100%}
+
+#eventLog{
+  min-height:20px;
+  margin:7px 0;
+  text-align:center;
+  font-size:11px;
+  color:#55d9ff;
+}
+
+.main-layout{
+  width:100%;
+}
+
+.map-wrap{
+  position:relative;
+  width:100%;
+  height:440px;
+  overflow:hidden;
+  background:#0a1628;
+  border:1px solid #315579;
+  border-radius:12px;
+  padding:16px 10px;
+}
+
+.map-wrap:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:18px 18px;
+  z-index:0;
+}
+
+#map{
+  position:relative;
+  z-index:2;
+  width:100%;
+  height:100%;
+  min-height:400px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  gap:4px;
+}
+
+#mapSvg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:1;
+  pointer-events:none;
+  overflow:visible;
+}
+
+.map-row{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-around;
+  gap:8px;
+  min-height:46px;
+}
+
+.node{
+  width:46px;
+  height:46px;
+  flex:0 0 46px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  border-radius:50%;
+  border:1px solid #315579;
+  background:#10243a;
+  font-size:18px;
+  user-select:none;
+  transition:transform .15s ease,box-shadow .15s ease,opacity .15s ease;
+}
+
+.node:hover{transform:scale(1.05)}
+
+.node.available{
+  border-color:#55d9ff;
+  box-shadow:0 0 12px rgba(85,217,255,.25);
+  cursor:pointer;
+}
+
+.node.current{
+  border-color:#ffd35a;
+  box-shadow:0 0 12px rgba(255,211,90,.2);
+}
+
+.node.done{opacity:.8}
+
+.node.locked,
+.node.map-placeholder{
+  opacity:.28;
+}
+
+.node.boss{border-color:#ff5964}
+.node.shop{border-color:#ffd35a}
+.node.skill{border-color:#c47cff}
+.node.meat{border-color:#ff9f5c}
+.node.event{border-color:#fff}
+.node.rifugio{border-color:#55d9ff}
+.node.free{border-color:#55d9ff}
+
+.node img{
+  width:34px;
+  height:34px;
+  object-fit:contain;
+  image-rendering:pixelated;
+}
+
+.map-enemy-preview-crop{
+  width:34px;
+  height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.map-enemy-preview-final{
+  max-width:34px;
+  max-height:34px;
+  object-fit:contain;
+  image-rendering:pixelated;
+}
+
+.map-sword-final{
+  position:absolute;
+  right:-4px;
+  bottom:-5px;
+  font-size:13px;
+}
+
+.map-line{
+  stroke:#315579;
+  stroke-width:2;
+  opacity:.45;
+}
+
+.map-line.available{
+  stroke:#55d9ff;
+  stroke-width:2.5;
+  opacity:.9;
+}
+
+.map-line.done{
+  stroke:#55d9ff;
+  opacity:.7;
+}
+
+/* =========================================================
+   BOTTOM PANEL — CORE 2 v8
+   Il pannello viene costruito dal JS.
+   ========================================================= */
+
+#bottomContainer{
+  width:100%;
+  margin-top:8px;
+}
+
+#bottomPanel.bottom-v8{
+  width:100%;
+  min-height:142px;
+  display:grid;
+  grid-template-columns:74px minmax(0,1fr) 92px;
+  gap:7px;
+  padding:7px;
+  background:linear-gradient(145deg,#112746,#0a182c);
+  border:1px solid #294b70;
+  border-radius:16px;
+  box-shadow:
+    0 8px 20px rgba(0,0,0,.25),
+    inset 0 1px 0 rgba(255,255,255,.035);
+}
+
+.b8-left{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.b8-pokemon-slot{
+  width:100%;
+  height:64px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(49,85,121,.8);
+  border-radius:10px;
+  background:#071321;
+  cursor:pointer;
+}
+
+.b8-pokemon-slot img{
+  max-width:62px;
+  max-height:62px;
+  object-fit:contain;
+  image-rendering:pixelated;
+}
+
+#starter2Placeholder{
+  font-size:9px;
+  opacity:.55;
+}
+
+.b8-center{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+
+.b8-top{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+
+.b8-name{
+  min-width:0;
+  flex:1;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:12px;
+  font-weight:bold;
+}
+
+.b8-lv{
+  flex:0 0 auto;
+  padding:3px 5px;
+  border:1px solid rgba(49,85,121,.65);
+  border-radius:5px;
+  font-size:9px;
+}
+
+.b8-typing{
+  display:flex;
+  gap:2px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.b8-typing .type-badge{
+  margin:0;
+}
+
+.b8-bars{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+
+.b8-bar-row{
+  display:grid;
+  grid-template-columns:14px minmax(0,1fr) auto;
+  align-items:center;
+  gap:4px;
+  min-width:0;
+}
+
+.b8-icon{
+  font-size:10px;
+}
+
+.b8-bar-bg{
+  width:100%;
+  height:7px;
+  overflow:hidden;
+  border-radius:5px;
+  background:#10151c;
+  border:1px solid rgba(49,85,121,.45);
+}
+
+.b8-fill{
+  height:100%;
+  width:0;
+  transition:width .2s ease;
+}
+
+.b8-fill.hp{background:#55d9ff}
+.b8-value{
+  font-size:8px;
+  white-space:nowrap;
+  opacity:.75;
+}
+
+.b8-stats{
+  display:flex;
+  justify-content:space-between;
+  gap:4px;
+  font-size:9px;
+}
+
+.b8-stats b{font-size:11px}
+
+.b8-s2-section{
+  padding-top:4px;
+  border-top:1px solid rgba(49,85,121,.4);
+}
+
+.b8-s2-header{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:3px;
+}
+
+.b8-s2-name{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:9px;
+  font-weight:bold;
+}
+
+.b8-s2-level{font-size:8px}
+
+.b8-s2-typing{
+  grid-column:1 / -1;
+  justify-content:flex-start;
+}
+
+.b8-quick-items{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:3px;
+  margin-top:auto;
+}
+
+.b8-quick-item{
+  min-width:0;
+  height:28px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(49,85,121,.6);
+  border-radius:5px;
+  background:#071321;
+  overflow:hidden;
+  cursor:pointer;
+}
+
+.b8-quick-item.empty{opacity:.45}
+.quick-item-icon{font-size:12px;line-height:1}
+.b8-quick-item small{font-size:7px;opacity:.8}
+
+.b8-right{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+
+.b8-right-main{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  height:100%;
+}
+
+.b8-money{
+  text-align:center;
+  font-size:11px;
+  padding:3px;
+  border:1px solid rgba(49,85,121,.55);
+  border-radius:6px;
+}
+
+.b8-incubator{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  padding:4px;
+  border:1px solid rgba(49,85,121,.55);
+  border-radius:6px;
+  font-size:8px;
+  text-align:center;
+}
+
+.b8-incubator>span{font-size:16px}
+
+.b8-incubator small{
+  display:block;
+  opacity:.65;
+  margin-top:2px;
+}
+
+.b8-team-viewer{
+  flex:1;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:3px;
+  border:1px solid rgba(49,85,121,.55);
+  border-radius:7px;
+  background:rgba(7,19,33,.55);
+}
+
+.b8-team-header{
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  font-size:7px;
+  opacity:.75;
+}
+
+.b8-team-image-wrap{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:2px;
+}
+
+.b8-team-image-wrap img{
+  width:42px;
+  height:42px;
+  object-fit:contain;
+  image-rendering:pixelated;
+}
+
+.team-nav{
+  width:18px;
+  height:18px;
+  padding:0;
+  border-radius:4px;
+  font-size:8px;
+}
+
+.b8-team-viewer-name{
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:7px;
+}
+
+.b8-team-viewer-level{
+  font-size:7px;
+  opacity:.6;
+}
+
+.b8-inventory-btn{
+  width:100%;
+  padding:5px 2px;
+  font-size:7px;
+}
+
+.b8-inventory-panel{
+  flex:1;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  padding:4px;
+  border:1px solid rgba(49,85,121,.55);
+  border-radius:7px;
+  background:rgba(7,19,33,.55);
+}
+
+.b8-inventory-title{
+  font-size:8px;
+  font-weight:bold;
+  text-align:center;
+}
+
+.b8-inventory-section{
+  font-size:7px;
+}
+
+.inventory-list{
+  max-height:38px;
+  overflow:auto;
+  margin-top:2px;
+}
+
+.inventory-entry{
+  display:flex;
+  align-items:center;
+  gap:3px;
+  padding:2px 0;
+  font-size:7px;
+}
+
+.inventory-icon{font-size:10px}
+.inventory-name{
+  min-width:0;
+  flex:1;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.inventory-empty{
+  opacity:.45;
+  font-size:7px;
+}
+
+.b8-inventory-incubator{
+  font-size:7px;
+  opacity:.7;
+}
+
+.b8-inventory-close{
+  margin-top:auto;
+  width:100%;
+  padding:4px;
+  font-size:7px;
+}
+
+/* =========================================================
+   LOG
+   ========================================================= */
+
+.run-log-panel{
+  margin-top:8px;
+  border:1px solid rgba(49,85,121,.5);
+  border-radius:8px;
+  overflow:hidden;
+}
+
+.run-log-toggle{
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border:0;
+  border-radius:0;
+  padding:7px 8px;
+  background:#0d2035;
+  font-size:9px;
+}
+
+.run-log-content{
+  display:none;
+  max-height:120px;
+  overflow:auto;
+  padding:6px 8px;
+  font-size:8px;
+  text-align:left;
+}
+
+.run-log-line{
+  margin:2px 0;
+  opacity:.8;
+}
+
+/* =========================================================
+   MODALI
+   ========================================================= */
+
+#modal,
+#pokePreview,
+#pokeInfo{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:12px;
+  background:rgba(0,0,0,.78);
+}
+
+#modalContent{
+  width:100%;
+  max-width:450px;
+}
+
+.center,
+.modal-box,
+.preview-box{
+  max-width:450px;
+  width:100%;
+  max-height:90vh;
+  overflow:auto;
+  background:#0a1628;
+  border:1px solid #315579;
+  border-radius:12px;
+  padding:14px;
+}
+
+#pokePreview .preview-box{text-align:center}
+
+#ppSprite{
+  width:96px;
+  height:96px;
+  object-fit:contain;
+  image-rendering:pixelated;
+}
+
+.type-badge{
+  display:inline-block;
+  padding:2px 5px;
+  margin:2px;
+  border-radius:4px;
+  font-size:8px;
+  color:#fff;
+}
+
+.bar{
+  width:100%;
+  height:7px;
+  margin:4px 0;
+  overflow:hidden;
+  border-radius:5px;
+  background:#111;
+}
+
+.bar>div{
+  height:100%;
+  background:#55d9ff;
+}
+
+.danger{border-color:#8b3940}
+
+#blog{
+  min-height:45px;
+  max-height:110px;
+  overflow:auto;
+  padding:6px;
+  font-size:9px;
+  background:rgba(0,0,0,.2);
+  border-radius:6px;
+}
+
+.bf-sprite{
+  position:relative;
+}
+
+.bf-sprite img{
+  max-width:110px;
+  max-height:110px;
+  image-rendering:pixelated;
+}
+
+.dmg-num{
+  position:absolute;
+  left:50%;
+  top:15%;
+  transform:translate(-50%,-50%);
+  font-weight:bold;
+  font-size:18px;
+  pointer-events:none;
+}
+
+#fatal{
+  display:none;
+  position:fixed;
+  left:10px;
+  right:10px;
+  bottom:10px;
+  z-index:9999;
+  max-width:900px;
+  margin:auto;
+  padding:12px;
+  background:#240d12;
+  border:1px solid #a54b57;
+  border-radius:8px;
+  color:#ffdfe3;
+  white-space:pre-wrap;
+  font:12px monospace;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media(max-width:390px){
+  #bottomPanel.bottom-v8{
+    grid-template-columns:64px minmax(0,1fr) 82px;
+    gap:5px;
+    padding:5px;
+  }
+
+  .b8-pokemon-slot{height:58px}
+  .b8-pokemon-slot img{max-width:56px;max-height:56px}
+  .b8-stats{font-size:8px}
+  .b8-stats b{font-size:10px}
+}
+
+@media(min-width:700px){
+  #gameBox{max-width:520px}
+  .map-wrap{height:500px}
+  #map{min-height:460px}
+}
+</style>
 </head>
-
 
 <body>
 
 <main id="gameBox">
 
-
-  <!-- =========================================================
-       MENU PRINCIPALE
-       ========================================================= -->
-
+  <!-- MENU -->
   <section id="menu">
-
-    <h1>
-      ⚡ PokeMisteryRL
-    </h1>
-
-    <p class="subtitle">
-      ROGUELIKE ADVENTURE
-    </p>
-
-    <button
-      id="startButton"
-      type="button"
-    >
-      🎲 RUN CASUALE
-    </button>
-
-    <div id="boot">
-      Caricamento sistema...
+    <div class="menu-box">
+      <h1>⚡ PokeMisteryRL</h1>
+      <p>CORE 1 + CORE 2<br>GitHub Pages</p>
+      <button type="button" id="startButton">
+        ▶ AVVIA RUN
+      </button>
     </div>
-
   </section>
 
-
-  <!-- =========================================================
-       GAME
-       ========================================================= -->
-
-  <section
-    id="game"
-    class="hidden"
-  >
+  <!-- GAME -->
+  <section id="game" class="hidden">
 
     <div id="eventLog"></div>
 
+    <main class="main-layout">
+      <div class="map-wrap">
 
-    <!-- MAPPA -->
+        <div
+          class="floor-label"
+          aria-hidden="true"
+        >
+          PIANO <b id="floorNum">1</b>
+        </div>
 
-    <div class="map-wrap">
+        <svg
+          id="mapSvg"
+          aria-hidden="true"
+        ></svg>
 
-      <svg
-        id="mapSvg"
-        aria-hidden="true"
-      ></svg>
+        <div
+          id="map"
+          aria-label="Mappa della run"
+        ></div>
 
-      <div
-        id="map"
-        aria-label="Mappa della run"
-      ></div>
+      </div>
+    </main>
 
-    </div>
-
-
-    <!-- BOTTOM / HUD -->
-
+    <!-- Il CORE 2 costruisce qui il Bottom Panel completo. -->
     <div id="bottomContainer"></div>
 
-
-    <!-- LOG -->
-
-    <div>
-
-      <div
-        id="runLogHeader"
-        onclick="toggleRunLog()"
-      >
-        LOG RUN ▼
-      </div>
-
+    <!-- Il CORE 2 costruisce anche il proprio run log nel Bottom Panel. -->
+    <div id="legacyRunLog" class="hidden">
+      <div id="runLogHeader">LOG RUN</div>
       <div id="runLogContent"></div>
-
     </div>
 
   </section>
 
-
-  <!-- =========================================================
-       MODAL
-       ========================================================= -->
-
-  <div
-    id="modal"
-    class="hidden"
-  >
-
+  <!-- MODALE PRINCIPALE -->
+  <div id="modal" class="hidden">
     <div id="modalContent"></div>
-
   </div>
 
+  <!-- PREVIEW POKÉMON -->
+  <div id="pokePreview" class="hidden">
+    <div class="preview-box">
 
-  <!-- =========================================================
-       POKÉMON PREVIEW
-       ========================================================= -->
+      <div style="text-align:center">
 
-  <section
-    id="pokePreview"
-    class="hidden"
-    aria-hidden="true"
-  >
+        <img id="ppSprite" src="" alt="">
 
-    <div class="pp-box">
+        <h2 id="ppName">—</h2>
 
+        <div id="ppLevel">LV 1</div>
 
-      <!-- HEADER -->
+        <div id="ppTypes"></div>
 
-      <div class="pp-top">
+        <div style="margin:10px 0">
 
-
-        <div class="pp-sprite-wrap">
-
-          <img
-            id="ppSprite"
-            src=""
-            alt="Pokémon"
-          >
-
-        </div>
-
-
-        <div class="pp-info">
-
-          <h3 id="ppName">
-            -
-          </h3>
-
-
-          <span
-            id="ppLevel"
-            class="pp-lv"
-          >
-            LV 1
-          </span>
-
-
-          <div
-            id="ppTypes"
-            class="pp-types"
-          ></div>
-
-
-          <div class="pp-hp">
-
+          <div class="bar">
             <div
               id="ppHpFill"
-              class="pp-fill"
+              style="width:100%"
             ></div>
-
           </div>
 
-
-          <small id="ppHpText">
-            0/0
-          </small>
+          <div id="ppHpText">
+            HP 0/0
+          </div>
 
         </div>
 
+        <div
+          style="
+            display:flex;
+            justify-content:space-around;
+            font-size:11px
+          "
+        >
+          <span>
+            ATK <b id="ppk">0</b>
+          </span>
+
+          <span>
+            DEF <b id="ppDef">0</b>
+          </span>
+
+          <span>
+            SPD <b id="ppSpd">0</b>
+          </span>
+        </div>
+
+        <div
+          id="ppCustomContent"
+          style="margin-top:10px"
+        ></div>
 
         <button
           type="button"
           class="pp-close"
-          onclick="closeTeamPreview()"
-          aria-label="Chiudi"
+          style="margin-top:10px"
+          onclick="
+            closeTeamPreview();
+            busy=0;
+            PokeMisteryRL.UI.render();
+          "
         >
-          ✕
+          CHIUDI
         </button>
 
       </div>
 
+    </div>
+  </div>
 
-      <!-- STATISTICHE -->
+  <!-- INFO POKÉMON -->
+  <div id="pokeInfo" class="hidden">
 
-      <div class="pp-stats">
+    <div class="modal-box">
 
+      <div style="text-align:center">
 
-        <div>
+        <img
+          id="pokeInfoSprite"
+          src=""
+          alt=""
+          style="
+            width:80px;
+            height:80px;
+            object-fit:contain;
+            image-rendering:pixelated
+          "
+        >
 
-          ATK
+        <h2 id="pokeInfoName">—</h2>
 
-          <b id="ppk">
-            0
-          </b>
-
-        </div>
-
-
-        <div>
-
-          DEF
-
-          <b id="ppDef">
-            0
-          </b>
-
-        </div>
-
-
-        <div>
-
-          SPD
-
-          <b id="ppSpd">
-            0
-          </b>
-
-        </div>
-
+        <div id="pokeInfoTypes"></div>
 
       </div>
 
+      <p>
+        HP <span id="piHp">0/0</span>
+      </p>
 
-      <!-- INFO BOX -->
+      <p>
+        ATK
+        <span id="piAtk">0</span>
+        <span id="piAtkR"></span>
+      </p>
 
-      <div class="pp-custom">
+      <p>
+        DEF
+        <span id="piDef">0</span>
+        <span id="piDefR"></span>
+      </p>
 
-        <h4>
-          Info Box
-        </h4>
+      <p>
+        SPD
+        <span id="piSpd">0</span>
+        <span id="piSpdR"></span>
+      </p>
 
-        <div id="ppCustomContent"></div>
+      <p>
+        CRIT <span id="piCrit">0</span>
+      </p>
 
-      </div>
+      <p>
+        EVA <span id="piEva">0</span>
+      </p>
 
+      <p>
+        STUN <span id="piStun">0</span>
+      </p>
+
+      <p>
+        FEL <span id="piFel">0</span>
+      </p>
+
+      <div id="pokeInfoActions"></div>
+
+      <button
+        type="button"
+        onclick="closePokeInfo()"
+      >
+        CHIUDI
+      </button>
 
     </div>
 
-  </section>
-
+  </div>
 
 </main>
 
+<div id="fatal"></div>
 
 <!-- =========================================================
-     FATAL ERROR
+     FILE DEL REPOSITORY
      ========================================================= -->
-
-<div
-  id="fatal"
-  style="
-    display:none;
-    position:fixed;
-    left:10px;
-    right:10px;
-    bottom:10px;
-    z-index:9999;
-    max-width:900px;
-    margin:auto;
-    padding:12px;
-    background:#240d12;
-    border:1px solid #a54b57;
-    border-radius:8px;
-    color:#ffdfe3;
-    white-space:pre-wrap;
-    font:12px monospace;
-  "
-></div>
-
 
 <script src="./DB_PKM.js"></script>
 <script src="./MOSSE_PKM.js"></script>
+
+<!-- CORE 1 FIXATO -->
 <script src="./CORE_1_BASE.js"></script>
+
+<!-- REGIONI -->
 <script src="./LEVEL_SYSTEM_REGION.js"></script>
 <script src="./SKILL_SYSTEM_REGION.js"></script>
 <script src="./DB_ITEMS.js"></script>
+
+<!-- CORE 2 -->
 <script src="./CORE_2_GAMEPLAY.js"></script>
 
-  
-<!-- =========================================================
-     S2 DIRECT CLICK BRIDGE
-     
-     NON modifica il layout.
-     Collega solamente le card S2 alla funzione
-     equipAsSecond() già presente nel CORE.
-     ========================================================= -->
-
 <script>
+/*
+ * Controllo leggero post-caricamento.
+ * Non costruisce una seconda mappa e non sostituisce nessuna funzione del CORE.
+ */
+window.addEventListener("error", function(e){
+  const box = document.getElementById("fatal");
+  if(!box) return;
 
-(function () {
+  box.style.display = "block";
+  box.textContent =
+    "ERRORE JAVASCRIPT\n\n" +
+    (e.error?.stack || e.message || String(e.error || e));
+});
 
-  if (
-    window.__s2DirectSwapCapture
-  ) {
+window.addEventListener("unhandledrejection", function(e){
+  const box = document.getElementById("fatal");
+  if(!box) return;
 
-    return;
+  box.style.display = "block";
+  box.textContent =
+    "PROMISE REJECTION\n\n" +
+    (e.reason?.stack || e.reason || String(e.reason));
+});
 
-  }
+console.log("PokeMisteryRL");
+console.log("PKM_ALL:", !!window.PKM_ALL);
+console.log("SKILL_DB:", typeof SKILL_DB !== "undefined");
+console.log("CORE 1 ready:", !!window.PokeMisteryRL_CoreBridge?.part1Ready);
+console.log("CORE 2 ready:", !!window.PokeMisteryRL_CoreBridge?.part2Ready);
+console.log("startPokemon:", typeof window.PokeMisteryRL?.Run?.startPokemon);
 
+(function(){
+  const button = document.getElementById("startButton");
+  if(!button) return;
 
-  window.__s2DirectSwapCapture = true;
-
-
-  document.addEventListener(
-    "click",
-    function (event) {
-
-      const card =
-        event.target?.closest?.(
-          ".s2-choice-card"
+  button.addEventListener("click", function(){
+    try {
+      if(
+        !window.PokeMisteryRL ||
+        !window.PokeMisteryRL.Run ||
+        typeof window.PokeMisteryRL.Run.startPokemon !== "function"
+      ){
+        throw new Error(
+          "PokeMisteryRL.Run.startPokemon() non disponibile."
         );
-
-
-      if (!card) {
-
-        return;
-
       }
 
-
-      const index =
-        card.getAttribute(
-          "data-s2-index"
-        );
-
-
-      if (index === null) {
-
-        return;
-
-      }
-
-
-      event.preventDefault();
-
-      event.stopImmediatePropagation();
-
-
-      if (
-        typeof window.equipAsSecond ===
-        "function"
-      ) {
-
-        window.equipAsSecond(
-          Number(index)
-        );
-
-      } else {
-
-        console.error(
-          "equipAsSecond() non disponibile"
-        );
-
-      }
-
-    },
-    true
-  );
-
-})();
-
-</script>
-
-
-<!-- =========================================================
-     HOME / START
-     ========================================================= -->
-
-<script>
-
-(function () {
-
-
-  const fatal =
-    document.getElementById(
-      "fatal"
-    );
-
-
-  const boot =
-    document.getElementById(
-      "boot"
-    );
-
-
-  const button =
-    document.getElementById(
-      "startButton"
-    );
-
-
-  function showError(
-    message
-  ) {
-
-    fatal.style.display =
-      "block";
-
-
-    fatal.textContent =
-      message;
-
-
-    console.error(
-      message
-    );
-
-  }
-
-
-  <!-- =======================================================
-       ERROR HANDLER
-       ======================================================= -->
-
-
-  window.addEventListener(
-    "error",
-    function (event) {
-
-      showError(
-        "ERRORE JAVASCRIPT\n\n" +
-
-        (
-          event.error?.stack ||
-
-          event.message ||
-
-          String(
-            event.error ||
-            event
-          )
-        )
-      );
-
-    }
-  );
-
-
-  window.addEventListener(
-    "unhandledrejection",
-    function (event) {
-
-      showError(
-        "PROMISE REJECTION\n\n" +
-
-        (
-          event.reason?.stack ||
-
-          event.reason ||
-
-          String(
-            event.reason
-          )
-        )
-      );
-
-    }
-  );
-
-
-  <!-- =======================================================
-       START BUTTON
-       ======================================================= -->
-
-
-  button.addEventListener(
-    "click",
-    function () {
-
-
-      if (
-        typeof window.start !==
-        "function"
-      ) {
-
-        showError(
-          "window.start non è disponibile.\n\n" +
-          "Il CORE non espone ancora " +
-          "la funzione di avvio della run."
-        );
-
-        return;
-
-      }
-
-
-      try {
-
-        window.start();
-
-      } catch (error) {
-
-        showError(
+      window.PokeMisteryRL.Run.startPokemon();
+    } catch(err) {
+      const box = document.getElementById("fatal");
+      if(box){
+        box.style.display = "block";
+        box.textContent =
           "ERRORE DURANTE LA RUN\n\n" +
-
-          (
-            error?.stack ||
-            error
-          )
-        );
-
+          (err?.stack || err?.message || String(err));
       }
-
+      console.error(err);
     }
-  );
-
-
-  <!-- =======================================================
-       DIAGNOSTICA
-       ======================================================= -->
-
-
-  console.table({
-
-    PKM_ALL:
-      !!window.PKM_ALL,
-
-
-    MOSSE:
-      typeof SKILL_DB,
-
-
-    CORE_1:
-      !!window
-        .PokeMisteryRL_CoreBridge
-        ?.part1Ready,
-
-
-    TEAM:
-      !!window
-        .PokeMisteryRL
-        ?.TeamRoster,
-
-
-    LEVEL:
-      typeof window
-        .PokeMisteryRL_LevelSystem,
-
-
-    SKILL:
-      typeof window
-        .PokeMisteryRL_SkillSystem,
-
-
-    ITEMS:
-      !!window.PokeMisteryRL_Items,
-
-
-    CORE_2:
-      !!window
-        .PokeMisteryRL_CoreBridge
-        ?.part2Ready,
-
-
-    RECRUITMENT:
-      typeof window
-        .showRecruitmentPrompt,
-
-
-    EQUIP_S2:
-      typeof window
-        .equipAsSecond,
-
-
-    START:
-      typeof window.start
-
   });
-
-
-  if (
-    typeof window.start ===
-    "function"
-  ) {
-
-    boot.textContent =
-      "✅ Sistema pronto";
-
-  } else {
-
-    boot.textContent =
-      "⚠️ CORE caricato — start() non esposto";
-
-  }
-
-
 })();
-
 </script>
-
 
 </body>
-
 </html>
-
 
 
 
