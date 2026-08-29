@@ -5,789 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PokeMisteryRL</title>
 
-<style>
-*{box-sizing:border-box}
-
-html,body{
-  margin:0;
-  min-height:100%;
-  background:#050a14;
-  color:#fff;
-  font-family:monospace;
-}
-
-body{
-  display:flex;
-  justify-content:center;
-  padding:10px;
-}
-
-button{
-  font:inherit;
-  color:inherit;
-  background:#0d2035;
-  border:1px solid #315579;
-  border-radius:8px;
-  padding:8px 12px;
-  cursor:pointer;
-}
-
-button:hover{background:#153453}
-button:disabled{opacity:.45;cursor:default}
-.hidden{display:none!important}
-
-#gameBox{
-  width:100%;
-  max-width:450px;
-  min-height:600px;
-  position:relative;
-}
-
-/* =========================================================
-   MENU
-   ========================================================= */
-
-#menu{
-  min-height:600px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.menu-box{
-  width:100%;
-  padding:24px;
-  border:1px solid #315579;
-  border-radius:14px;
-  background:#0a1628;
-  text-align:center;
-  box-shadow:0 12px 35px rgba(0,0,0,.35);
-}
-
-.menu-box h1{
-  margin:0 0 8px;
-  font-size:25px;
-}
-
-.menu-box p{
-  opacity:.65;
-  font-size:11px;
-  line-height:1.5;
-}
-
-.menu-box button{
-  width:100%;
-  margin-top:8px;
-  font-weight:bold;
-}
-
-/* =========================================================
-   GAME / MAPPA
-   ========================================================= */
-
-#game{width:100%}
-
-#eventLog{
-  min-height:20px;
-  margin:7px 0;
-  text-align:center;
-  font-size:11px;
-  color:#55d9ff;
-}
-
-.main-layout{
-  width:100%;
-}
-
-.map-wrap{
-  position:relative;
-  width:100%;
-  height:440px;
-  overflow:hidden;
-  background:#0a1628;
-  border:1px solid #315579;
-  border-radius:12px;
-  padding:16px 10px;
-}
-
-.map-wrap:after{
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  background:
-    radial-gradient(circle,rgba(255,255,255,.025) 1px,transparent 1px);
-  background-size:18px 18px;
-  z-index:0;
-}
-
-#map{
-  position:relative;
-  z-index:2;
-  width:100%;
-  height:100%;
-  min-height:400px;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-  gap:4px;
-}
-
-#mapSvg{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  z-index:1;
-  pointer-events:none;
-  overflow:visible;
-}
-
-.map-row{
-  width:100%;
-  display:flex;
-  align-items:center;
-  justify-content:space-around;
-  gap:8px;
-  min-height:46px;
-}
-
-.node{
-  width:46px;
-  height:46px;
-  flex:0 0 46px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  position:relative;
-  border-radius:50%;
-  border:1px solid #315579;
-  background:#10243a;
-  font-size:18px;
-  user-select:none;
-  transition:transform .15s ease,box-shadow .15s ease,opacity .15s ease;
-}
-
-.node:hover{transform:scale(1.05)}
-
-.node.available{
-  border-color:#55d9ff;
-  box-shadow:0 0 12px rgba(85,217,255,.25);
-  cursor:pointer;
-}
-
-.node.current{
-  border-color:#ffd35a;
-  box-shadow:0 0 12px rgba(255,211,90,.2);
-}
-
-.node.done{opacity:.8}
-
-.node.locked,
-.node.map-placeholder{
-  opacity:.28;
-}
-
-.node.boss{border-color:#ff5964}
-.node.shop{border-color:#ffd35a}
-.node.skill{border-color:#c47cff}
-.node.meat{border-color:#ff9f5c}
-.node.event{border-color:#fff}
-.node.rifugio{border-color:#55d9ff}
-.node.free{border-color:#55d9ff}
-
-.node img{
-  width:34px;
-  height:34px;
-  object-fit:contain;
-  image-rendering:pixelated;
-}
-
-.map-enemy-preview-crop{
-  width:34px;
-  height:34px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.map-enemy-preview-final{
-  max-width:34px;
-  max-height:34px;
-  object-fit:contain;
-  image-rendering:pixelated;
-}
-
-.map-sword-final{
-  position:absolute;
-  right:-4px;
-  bottom:-5px;
-  font-size:13px;
-}
-
-.map-line{
-  stroke:#315579;
-  stroke-width:2;
-  opacity:.45;
-}
-
-.map-line.available{
-  stroke:#55d9ff;
-  stroke-width:2.5;
-  opacity:.9;
-}
-
-.map-line.done{
-  stroke:#55d9ff;
-  opacity:.7;
-}
-
-/* =========================================================
-   BOTTOM PANEL — CORE 2 v8
-   Il pannello viene costruito dal JS.
-   ========================================================= */
-
-#bottomContainer{
-  width:100%;
-  margin-top:8px;
-}
-
-#bottomPanel.bottom-v8{
-  width:100%;
-  min-height:142px;
-  display:grid;
-  grid-template-columns:74px minmax(0,1fr) 92px;
-  gap:7px;
-  padding:7px;
-  background:linear-gradient(145deg,#112746,#0a182c);
-  border:1px solid #294b70;
-  border-radius:16px;
-  box-shadow:
-    0 8px 20px rgba(0,0,0,.25),
-    inset 0 1px 0 rgba(255,255,255,.035);
-}
-
-.b8-left{
-  min-width:0;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-
-.b8-pokemon-slot{
-  width:100%;
-  height:64px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  position:relative;
-  overflow:hidden;
-  border:1px solid rgba(49,85,121,.8);
-  border-radius:10px;
-  background:#071321;
-  cursor:pointer;
-}
-
-.b8-pokemon-slot img{
-  max-width:62px;
-  max-height:62px;
-  object-fit:contain;
-  image-rendering:pixelated;
-}
-
-#starter2Placeholder{
-  font-size:9px;
-  opacity:.55;
-}
-
-.b8-center{
-  min-width:0;
-  display:flex;
-  flex-direction:column;
-  gap:5px;
-}
-
-.b8-top{
-  min-width:0;
-  display:flex;
-  align-items:center;
-  gap:5px;
-}
-
-.b8-name{
-  min-width:0;
-  flex:1;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-  font-size:12px;
-  font-weight:bold;
-}
-
-.b8-lv{
-  flex:0 0 auto;
-  padding:3px 5px;
-  border:1px solid rgba(49,85,121,.65);
-  border-radius:5px;
-  font-size:9px;
-}
-
-.b8-typing{
-  display:flex;
-  gap:2px;
-  flex-wrap:wrap;
-  justify-content:flex-end;
-}
-
-.b8-typing .type-badge{
-  margin:0;
-}
-
-.b8-bars{
-  display:flex;
-  flex-direction:column;
-  gap:3px;
-}
-
-.b8-bar-row{
-  display:grid;
-  grid-template-columns:14px minmax(0,1fr) auto;
-  align-items:center;
-  gap:4px;
-  min-width:0;
-}
-
-.b8-icon{
-  font-size:10px;
-}
-
-.b8-bar-bg{
-  width:100%;
-  height:7px;
-  overflow:hidden;
-  border-radius:5px;
-  background:#10151c;
-  border:1px solid rgba(49,85,121,.45);
-}
-
-.b8-fill{
-  height:100%;
-  width:0;
-  transition:width .2s ease;
-}
-
-.b8-fill.hp{background:#55d9ff}
-.b8-value{
-  font-size:8px;
-  white-space:nowrap;
-  opacity:.75;
-}
-
-.b8-stats{
-  display:flex;
-  justify-content:space-between;
-  gap:4px;
-  font-size:9px;
-}
-
-.b8-stats b{font-size:11px}
-
-.b8-s2-section{
-  padding-top:4px;
-  border-top:1px solid rgba(49,85,121,.4);
-}
-
-.b8-s2-header{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) auto;
-  align-items:center;
-  gap:3px;
-}
-
-.b8-s2-name{
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-  font-size:9px;
-  font-weight:bold;
-}
-
-.b8-s2-level{font-size:8px}
-
-.b8-s2-typing{
-  grid-column:1 / -1;
-  justify-content:flex-start;
-}
-
-.b8-quick-items{
-  display:grid;
-  grid-template-columns:repeat(5,minmax(0,1fr));
-  gap:3px;
-  margin-top:auto;
-}
-
-.b8-quick-item{
-  min-width:0;
-  height:28px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  border:1px solid rgba(49,85,121,.6);
-  border-radius:5px;
-  background:#071321;
-  overflow:hidden;
-  cursor:pointer;
-}
-
-.b8-quick-item.empty{opacity:.45}
-.quick-item-icon{font-size:12px;line-height:1}
-.b8-quick-item small{font-size:7px;opacity:.8}
-
-.b8-right{
-  min-width:0;
-  display:flex;
-  flex-direction:column;
-  gap:5px;
-}
-
-.b8-right-main{
-  display:flex;
-  flex-direction:column;
-  gap:5px;
-  height:100%;
-}
-
-.b8-money{
-  text-align:center;
-  font-size:11px;
-  padding:3px;
-  border:1px solid rgba(49,85,121,.55);
-  border-radius:6px;
-}
-
-.b8-incubator{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:4px;
-  padding:4px;
-  border:1px solid rgba(49,85,121,.55);
-  border-radius:6px;
-  font-size:8px;
-  text-align:center;
-}
-
-.b8-incubator>span{font-size:16px}
-
-.b8-incubator small{
-  display:block;
-  opacity:.65;
-  margin-top:2px;
-}
-
-.b8-team-viewer{
-  flex:1;
-  min-height:0;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  padding:3px;
-  border:1px solid rgba(49,85,121,.55);
-  border-radius:7px;
-  background:rgba(7,19,33,.55);
-}
-
-.b8-team-header{
-  width:100%;
-  display:flex;
-  justify-content:space-between;
-  font-size:7px;
-  opacity:.75;
-}
-
-.b8-team-image-wrap{
-  width:100%;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:2px;
-}
-
-.b8-team-image-wrap img{
-  width:42px;
-  height:42px;
-  object-fit:contain;
-  image-rendering:pixelated;
-}
-
-.team-nav{
-  width:18px;
-  height:18px;
-  padding:0;
-  border-radius:4px;
-  font-size:8px;
-}
-
-.b8-team-viewer-name{
-  max-width:100%;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-  font-size:7px;
-}
-
-.b8-team-viewer-level{
-  font-size:7px;
-  opacity:.6;
-}
-
-.b8-inventory-btn{
-  width:100%;
-  padding:5px 2px;
-  font-size:7px;
-}
-
-.b8-inventory-panel{
-  flex:1;
-  min-height:0;
-  display:flex;
-  flex-direction:column;
-  gap:5px;
-  padding:4px;
-  border:1px solid rgba(49,85,121,.55);
-  border-radius:7px;
-  background:rgba(7,19,33,.55);
-}
-
-.b8-inventory-title{
-  font-size:8px;
-  font-weight:bold;
-  text-align:center;
-}
-
-.b8-inventory-section{
-  font-size:7px;
-}
-
-.inventory-list{
-  max-height:38px;
-  overflow:auto;
-  margin-top:2px;
-}
-
-.inventory-entry{
-  display:flex;
-  align-items:center;
-  gap:3px;
-  padding:2px 0;
-  font-size:7px;
-}
-
-.inventory-icon{font-size:10px}
-.inventory-name{
-  min-width:0;
-  flex:1;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-
-.inventory-empty{
-  opacity:.45;
-  font-size:7px;
-}
-
-.b8-inventory-incubator{
-  font-size:7px;
-  opacity:.7;
-}
-
-.b8-inventory-close{
-  margin-top:auto;
-  width:100%;
-  padding:4px;
-  font-size:7px;
-}
-
-/* =========================================================
-   LOG
-   ========================================================= */
-
-.run-log-panel{
-  margin-top:8px;
-  border:1px solid rgba(49,85,121,.5);
-  border-radius:8px;
-  overflow:hidden;
-}
-
-.run-log-toggle{
-  width:100%;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  border:0;
-  border-radius:0;
-  padding:7px 8px;
-  background:#0d2035;
-  font-size:9px;
-}
-
-.run-log-content{
-  display:none;
-  max-height:120px;
-  overflow:auto;
-  padding:6px 8px;
-  font-size:8px;
-  text-align:left;
-}
-
-.run-log-line{
-  margin:2px 0;
-  opacity:.8;
-}
-
-/* =========================================================
-   MODALI
-   ========================================================= */
-
-#modal,
-#pokePreview,
-#pokeInfo{
-  position:fixed;
-  inset:0;
-  z-index:1000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:12px;
-  background:rgba(0,0,0,.78);
-}
-
-#modalContent{
-  width:100%;
-  max-width:450px;
-}
-
-.center,
-.modal-box,
-.preview-box{
-  max-width:450px;
-  width:100%;
-  max-height:90vh;
-  overflow:auto;
-  background:#0a1628;
-  border:1px solid #315579;
-  border-radius:12px;
-  padding:14px;
-}
-
-#pokePreview .preview-box{text-align:center}
-
-#ppSprite{
-  width:96px;
-  height:96px;
-  object-fit:contain;
-  image-rendering:pixelated;
-}
-
-.type-badge{
-  display:inline-block;
-  padding:2px 5px;
-  margin:2px;
-  border-radius:4px;
-  font-size:8px;
-  color:#fff;
-}
-
-.bar{
-  width:100%;
-  height:7px;
-  margin:4px 0;
-  overflow:hidden;
-  border-radius:5px;
-  background:#111;
-}
-
-.bar>div{
-  height:100%;
-  background:#55d9ff;
-}
-
-.danger{border-color:#8b3940}
-
-#blog{
-  min-height:45px;
-  max-height:110px;
-  overflow:auto;
-  padding:6px;
-  font-size:9px;
-  background:rgba(0,0,0,.2);
-  border-radius:6px;
-}
-
-.bf-sprite{
-  position:relative;
-}
-
-.bf-sprite img{
-  max-width:110px;
-  max-height:110px;
-  image-rendering:pixelated;
-}
-
-.dmg-num{
-  position:absolute;
-  left:50%;
-  top:15%;
-  transform:translate(-50%,-50%);
-  font-weight:bold;
-  font-size:18px;
-  pointer-events:none;
-}
-
-#fatal{
-  display:none;
-  position:fixed;
-  left:10px;
-  right:10px;
-  bottom:10px;
-  z-index:9999;
-  max-width:900px;
-  margin:auto;
-  padding:12px;
-  background:#240d12;
-  border:1px solid #a54b57;
-  border-radius:8px;
-  color:#ffdfe3;
-  white-space:pre-wrap;
-  font:12px monospace;
-}
-
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
-
-@media(max-width:390px){
-  #bottomPanel.bottom-v8{
-    grid-template-columns:64px minmax(0,1fr) 82px;
-    gap:5px;
-    padding:5px;
-  }
-
-  .b8-pokemon-slot{height:58px}
-  .b8-pokemon-slot img{max-width:56px;max-height:56px}
-  .b8-stats{font-size:8px}
-  .b8-stats b{font-size:10px}
-}
-
-@media(min-width:700px){
-  #gameBox{max-width:520px}
-  .map-wrap{height:500px}
-  #map{min-height:460px}
-}
-</style>
+<link rel="stylesheet" href="./PokeMisteryRL.css">
 </head>
 
 <body>
@@ -1082,15 +300,12 @@ console.log("startPokemon:", typeof window.PokeMisteryRL?.Run?.startPokemon);
 </body>
 </html>
 
-
-
  <style>
 /* ============================================================
    PokeMisteryRL
    STYLE REWORK
    CORE JS COMPATIBLE
    ============================================================ */
-
 
 /* ============================================================
    01. RESET / BASE
@@ -1202,7 +417,6 @@ button.danger:hover{
         );
 }
 
-
 /* ============================================================
    02. UTILITIES
    ============================================================ */
@@ -1210,7 +424,6 @@ button.danger:hover{
 .hidden{
     display:none!important;
 }
-
 
 /* ============================================================
    03. MENU
@@ -1250,7 +463,6 @@ button.danger:hover{
     min-width:210px;
 }
 
-
 /* ============================================================
    04. GAME
    ============================================================ */
@@ -1265,7 +477,6 @@ button.danger:hover{
 
     margin:0 auto;
 }
-
 
 /* ============================================================
    05. MAP WRAPPER
@@ -1297,7 +508,6 @@ button.danger:hover{
         0 8px 25px rgba(0,0,0,.25);
 }
 
-
 /* ============================================================
    MAP SVG
    ============================================================ */
@@ -1314,7 +524,6 @@ button.danger:hover{
 
     z-index:0;
 }
-
 
 /* ============================================================
    MAP
@@ -1420,7 +629,6 @@ button.danger:hover{
     pointer-events:none;
 }
 
-
 /* ============================================================
    MAP CONNECTIONS
    ============================================================ */
@@ -1449,7 +657,6 @@ button.danger:hover{
     stroke-linecap:round;
 }
 
-
 /* ============================================================
    06. BOTTOM CONTAINER
    ============================================================ */
@@ -1475,7 +682,6 @@ button.danger:hover{
         inset 0 1px 0 rgba(255,255,255,.035);
 }
 
-
 /* ============================================================
    07. MAIN HUD GRID
    ============================================================ */
@@ -1497,7 +703,6 @@ button.danger:hover{
     text-align:left;
 }
 
-
 /* ============================================================
    08. LEFT HUD
    ============================================================ */
@@ -1513,7 +718,6 @@ button.danger:hover{
 
     gap:5px;
 }
-
 
 /* ============================================================
    STARTER 1
@@ -1554,7 +758,6 @@ button.danger:hover{
 
     image-rendering:pixelated;
 }
-
 
 /* ============================================================
    STARTER 2
@@ -1610,7 +813,6 @@ button.danger:hover{
     image-rendering:pixelated;
 }
 
-
 /* ============================================================
    09. CENTER HUD
    ============================================================ */
@@ -1626,7 +828,6 @@ button.danger:hover{
 
     gap:5px;
 }
-
 
 /* ============================================================
    TOP INFORMATION
@@ -1696,7 +897,6 @@ button.danger:hover{
     white-space:nowrap;
 }
 
-
 /* ============================================================
    TYPES
    ============================================================ */
@@ -1737,7 +937,6 @@ button.danger:hover{
     text-shadow:
         0 1px 2px rgba(0,0,0,.5);
 }
-
 
 /* ============================================================
    BARS
@@ -1831,7 +1030,6 @@ button.danger:hover{
     white-space:nowrap;
 }
 
-
 /* ============================================================
    STATS
    ============================================================ */
@@ -1861,7 +1059,6 @@ button.danger:hover{
 
     text-align:center;
 }
-
 
 /* ============================================================
    BONUS
@@ -1899,7 +1096,6 @@ button.danger:hover{
     text-overflow:ellipsis;
 }
 
-
 /* ============================================================
    10. RIGHT HUD
    ============================================================ */
@@ -1921,7 +1117,6 @@ button.danger:hover{
 
     border-left:1px solid rgba(49,85,121,.35);
 }
-
 
 /* ============================================================
    TEAM STORAGE
@@ -1955,7 +1150,6 @@ button.danger:hover{
 
     white-space:nowrap;
 }
-
 
 /* ============================================================
    TEAM SLOTS
@@ -2018,7 +1212,6 @@ button.danger:hover{
     image-rendering:pixelated;
 }
 
-
 /* ============================================================
    ACTION BUTTONS
    ============================================================ */
@@ -2057,7 +1250,6 @@ button.danger:hover{
     font-size:14px;
 }
 
-
 /* ============================================================
    11. GENERAL EVENT LOG
    ============================================================ */
@@ -2075,7 +1267,6 @@ button.danger:hover{
 
     pointer-events:none;
 }
-
 
 /* ============================================================
    12. BATTLE
@@ -2201,7 +1392,6 @@ button.danger:hover{
     background:#663434;
 }
 
-
 /* ============================================================
    BATTLE TEAM
    ============================================================ */
@@ -2291,7 +1481,6 @@ button.danger:hover{
     transition:width .25s ease;
 }
 
-
 /* ============================================================
    DAMAGE NUMBERS
    ============================================================ */
@@ -2340,7 +1529,6 @@ button.danger:hover{
             scale(1.15);
     }
 }
-
 
 /* ============================================================
    13. GENERAL MODAL
@@ -2399,7 +1587,6 @@ button.danger:hover{
     margin-top:0;
 }
 
-
 /* ============================================================
    14. POKÉMON PREVIEW
    ============================================================ */
@@ -2448,7 +1635,6 @@ button.danger:hover{
     box-shadow:
         0 20px 60px rgba(0,0,0,.6);
 }
-
 
 /* ============================================================
    PREVIEW TOP
@@ -2564,7 +1750,6 @@ button.danger:hover{
     font-size:9px;
 }
 
-
 /* ============================================================
    PREVIEW CLOSE
    ============================================================ */
@@ -2593,7 +1778,6 @@ button.danger:hover{
 
     font-size:13px;
 }
-
 
 /* ============================================================
    PREVIEW STATS
@@ -2631,7 +1815,6 @@ button.danger:hover{
 
     font-size:13px;
 }
-
 
 /* ============================================================
    PREVIEW CUSTOM AREA
@@ -2676,7 +1859,6 @@ button.danger:hover{
 
     font-size:10px;
 }
-
 
 /* ============================================================
    15. TYPE COLORS
@@ -2758,7 +1940,6 @@ button.danger:hover{
 .type-folletto{
     background:#ee99ac!important;
 }
-
 
 /* ============================================================
    16. RESPONSIVE
@@ -2886,7 +2067,6 @@ button.danger:hover{
     }
 }
 
-
 /* ============================================================
    17. TABLET / DESKTOP
    ============================================================ */
@@ -2945,8 +2125,6 @@ button.danger:hover{
     font-weight:bold;
     white-space:nowrap;
 }
-
-
 
 /* PokeMisteryRL HUD refinement V2 */
 
@@ -3358,7 +2536,6 @@ button.danger:hover{
     }
 }
 
-
 /* BOTTOM IMAGE LAYOUT */
 
 .bottom-v8{
@@ -3649,7 +2826,6 @@ button.danger:hover{
         font-size:11px;
     }
 }
-
 
   
 /* ============================================================
@@ -4774,7 +3950,6 @@ body.modal-child-open #pokePreview:not(:last-child){
    CORE JS COMPATIBLE
    ============================================================ */
 
-
 /* ============================================================
    01. RESET / BASE
    ============================================================ */
@@ -4885,7 +4060,6 @@ button.danger:hover{
         );
 }
 
-
 /* ============================================================
    02. UTILITIES
    ============================================================ */
@@ -4893,7 +4067,6 @@ button.danger:hover{
 .hidden{
     display:none!important;
 }
-
 
 /* ============================================================
    03. MENU
@@ -4933,7 +4106,6 @@ button.danger:hover{
     min-width:210px;
 }
 
-
 /* ============================================================
    04. GAME
    ============================================================ */
@@ -4948,7 +4120,6 @@ button.danger:hover{
 
     margin:0 auto;
 }
-
 
 /* ============================================================
    05. MAP WRAPPER
@@ -4980,7 +4151,6 @@ button.danger:hover{
         0 8px 25px rgba(0,0,0,.25);
 }
 
-
 /* ============================================================
    MAP SVG
    ============================================================ */
@@ -4997,7 +4167,6 @@ button.danger:hover{
 
     z-index:0;
 }
-
 
 /* ============================================================
    MAP
@@ -5103,7 +4272,6 @@ button.danger:hover{
     pointer-events:none;
 }
 
-
 /* ============================================================
    MAP CONNECTIONS
    ============================================================ */
@@ -5132,7 +4300,6 @@ button.danger:hover{
     stroke-linecap:round;
 }
 
-
 /* ============================================================
    06. BOTTOM CONTAINER
    ============================================================ */
@@ -5158,7 +4325,6 @@ button.danger:hover{
         inset 0 1px 0 rgba(255,255,255,.035);
 }
 
-
 /* ============================================================
    07. MAIN HUD GRID
    ============================================================ */
@@ -5180,7 +4346,6 @@ button.danger:hover{
     text-align:left;
 }
 
-
 /* ============================================================
    08. LEFT HUD
    ============================================================ */
@@ -5196,7 +4361,6 @@ button.danger:hover{
 
     gap:5px;
 }
-
 
 /* ============================================================
    STARTER 1
@@ -5237,7 +4401,6 @@ button.danger:hover{
 
     image-rendering:pixelated;
 }
-
 
 /* ============================================================
    STARTER 2
@@ -5293,7 +4456,6 @@ button.danger:hover{
     image-rendering:pixelated;
 }
 
-
 /* ============================================================
    09. CENTER HUD
    ============================================================ */
@@ -5309,7 +4471,6 @@ button.danger:hover{
 
     gap:5px;
 }
-
 
 /* ============================================================
    TOP INFORMATION
@@ -5379,7 +4540,6 @@ button.danger:hover{
     white-space:nowrap;
 }
 
-
 /* ============================================================
    TYPES
    ============================================================ */
@@ -5420,7 +4580,6 @@ button.danger:hover{
     text-shadow:
         0 1px 2px rgba(0,0,0,.5);
 }
-
 
 /* ============================================================
    BARS
@@ -5514,7 +4673,6 @@ button.danger:hover{
     white-space:nowrap;
 }
 
-
 /* ============================================================
    STATS
    ============================================================ */
@@ -5544,7 +4702,6 @@ button.danger:hover{
 
     text-align:center;
 }
-
 
 /* ============================================================
    BONUS
@@ -5582,7 +4739,6 @@ button.danger:hover{
     text-overflow:ellipsis;
 }
 
-
 /* ============================================================
    10. RIGHT HUD
    ============================================================ */
@@ -5604,7 +4760,6 @@ button.danger:hover{
 
     border-left:1px solid rgba(49,85,121,.35);
 }
-
 
 /* ============================================================
    TEAM STORAGE
@@ -5638,7 +4793,6 @@ button.danger:hover{
 
     white-space:nowrap;
 }
-
 
 /* ============================================================
    TEAM SLOTS
@@ -5701,7 +4855,6 @@ button.danger:hover{
     image-rendering:pixelated;
 }
 
-
 /* ============================================================
    ACTION BUTTONS
    ============================================================ */
@@ -5740,7 +4893,6 @@ button.danger:hover{
     font-size:14px;
 }
 
-
 /* ============================================================
    11. GENERAL EVENT LOG
    ============================================================ */
@@ -5758,7 +4910,6 @@ button.danger:hover{
 
     pointer-events:none;
 }
-
 
 /* ============================================================
    12. BATTLE
@@ -5884,7 +5035,6 @@ button.danger:hover{
     background:#663434;
 }
 
-
 /* ============================================================
    BATTLE TEAM
    ============================================================ */
@@ -5974,7 +5124,6 @@ button.danger:hover{
     transition:width .25s ease;
 }
 
-
 /* ============================================================
    DAMAGE NUMBERS
    ============================================================ */
@@ -6023,7 +5172,6 @@ button.danger:hover{
             scale(1.15);
     }
 }
-
 
 /* ============================================================
    13. GENERAL MODAL
@@ -6082,7 +5230,6 @@ button.danger:hover{
     margin-top:0;
 }
 
-
 /* ============================================================
    14. POKÉMON PREVIEW
    ============================================================ */
@@ -6131,7 +5278,6 @@ button.danger:hover{
     box-shadow:
         0 20px 60px rgba(0,0,0,.6);
 }
-
 
 /* ============================================================
    PREVIEW TOP
@@ -6247,7 +5393,6 @@ button.danger:hover{
     font-size:9px;
 }
 
-
 /* ============================================================
    PREVIEW CLOSE
    ============================================================ */
@@ -6276,7 +5421,6 @@ button.danger:hover{
 
     font-size:13px;
 }
-
 
 /* ============================================================
    PREVIEW STATS
@@ -6314,7 +5458,6 @@ button.danger:hover{
 
     font-size:13px;
 }
-
 
 /* ============================================================
    PREVIEW CUSTOM AREA
@@ -6359,7 +5502,6 @@ button.danger:hover{
 
     font-size:10px;
 }
-
 
 /* ============================================================
    15. TYPE COLORS
@@ -6441,7 +5583,6 @@ button.danger:hover{
 .type-folletto{
     background:#ee99ac!important;
 }
-
 
 /* ============================================================
    16. RESPONSIVE
@@ -6569,7 +5710,6 @@ button.danger:hover{
     }
 }
 
-
 /* ============================================================
    17. TABLET / DESKTOP
    ============================================================ */
@@ -6628,8 +5768,6 @@ button.danger:hover{
     font-weight:bold;
     white-space:nowrap;
 }
-
-
 
 /* PokeMisteryRL HUD refinement V2 */
 
@@ -7041,7 +6179,6 @@ button.danger:hover{
     }
 }
 
-
 /* BOTTOM IMAGE LAYOUT */
 
 .bottom-v8{
@@ -7332,7 +6469,6 @@ button.danger:hover{
         font-size:11px;
     }
 }
-
 
   
 /* ============================================================
@@ -8452,6 +7588,96 @@ body.modal-child-open #pokePreview:not(:last-child){
   width:100%;
   margin-top:6px;
 }
+
+/* ============================================================
+   MAP / BOTTOM FINAL FIX
+   Il contenitore della mappa ha altezza reale fissa.
+   Le righe della mappa non possono più espandere il wrapper.
+   ============================================================ */
+
+.map-wrap{
+    position:relative !important;
+    width:100% !important;
+    height:440px !important;
+    min-height:440px !important;
+    max-height:440px !important;
+    overflow:hidden !important;
+    padding:14px !important;
+}
+
+.floor-label{
+    position:absolute !important;
+    top:12px !important;
+    left:0 !important;
+    right:0 !important;
+    height:20px !important;
+    z-index:5 !important;
+    pointer-events:none !important;
+    text-align:center !important;
+}
+
+#map{
+    position:relative !important;
+    z-index:2 !important;
+    width:100% !important;
+    height:calc(100% - 28px) !important;
+    min-height:0 !important;
+    max-height:calc(100% - 28px) !important;
+    margin-top:28px !important;
+    display:flex !important;
+    flex-direction:column !important;
+    justify-content:space-between !important;
+    gap:0 !important;
+    overflow:hidden !important;
+}
+
+.map-row{
+    width:100% !important;
+    height:46px !important;
+    min-height:46px !important;
+    max-height:46px !important;
+    flex:0 0 46px !important;
+    margin:0 !important;
+    padding:0 !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-around !important;
+    gap:8px !important;
+}
+
+#mapSvg{
+    position:absolute !important;
+    left:0 !important;
+    top:0 !important;
+    width:100% !important;
+    height:100% !important;
+    z-index:1 !important;
+    pointer-events:none !important;
+    overflow:hidden !important;
+}
+
+#bottomContainer{
+    position:relative !important;
+    z-index:10 !important;
+    width:100% !important;
+    margin-top:8px !important;
+}
+
+/* Anche su viewport desktop la mappa resta separata dal Bottom. */
+@media(min-width:700px){
+    .map-wrap{
+        height:500px !important;
+        min-height:500px !important;
+        max-height:500px !important;
+    }
+
+    #map{
+        height:calc(100% - 28px) !important;
+        max-height:calc(100% - 28px) !important;
+    }
+}
+
 </style>
 
 </body></html>
+
