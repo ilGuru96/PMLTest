@@ -783,7 +783,10 @@ PokeMisteryRL.TeamRoster = (() => {
       team;
 
     renderTeamSlots();
-    PokeMisteryRL.UI.refreshBottomPanel();
+
+    if(PokeMisteryRL?.UI?.refreshBottomPanel){
+      PokeMisteryRL.UI.refreshBottomPanel();
+    }
 
     /*
      * Dopo la selezione chiudi automaticamente la schermata S2.
@@ -5154,6 +5157,7 @@ window.openSecondPreview = () => {
               type="button"
               class="s2-choice-card ${isCurrent ? "selected" : ""}"
               data-s2-index="${i}"
+              onclick="window.equipAsSecond(${i}); return false;"
             >
 
               <img
@@ -6049,22 +6053,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-/* =========================================================
-   S2 SWITCH BRIDGE
-   Collega i click delle card della squadra a equipAsSecond().
-   Non modifica la logica di scambio: usa quella già presente.
-   ========================================================= */
-document.addEventListener("click", (event) => {
-    const target = event.target.closest("[data-s2-index]");
-    if (!target) return;
 
-    const index = Number(target.dataset.s2Index);
-
-    if (!Number.isInteger(index)) return;
-    if (typeof window.equipAsSecond !== "function") return;
-
-    event.preventDefault();
-    event.stopPropagation();
-
-    window.equipAsSecond(index);
-});
